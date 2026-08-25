@@ -50,9 +50,20 @@
     </button>
   </div>
 
+  <p class="checklist-status" aria-live="polite">
+    {{ checkedCount }} de {{ displayedIngredients.length }} ingredientes listos
+  </p>
+
   <ul class="adjusted-ingredients" [class.loading]="isCalculating">
-    <li *ngFor="let ingredient of displayedIngredients">
-      <span>{{ ingredient.adjusted }}</span>
+    <li *ngFor="let ingredient of displayedIngredients; let index = index" [class.checked]="checkedIngredients[index]">
+      <label class="ingredient-check">
+        <input
+          type="checkbox"
+          [(ngModel)]="checkedIngredients[index]"
+          [attr.aria-label]="'Marcar ' + ingredient.adjusted + ' como disponible'"
+        />
+        <span>{{ ingredient.adjusted }}</span>
+      </label>
       <small *ngIf="!isOriginal && !ingredient.scalable">Se mantiene sin cambios</small>
     </li>
   </ul>

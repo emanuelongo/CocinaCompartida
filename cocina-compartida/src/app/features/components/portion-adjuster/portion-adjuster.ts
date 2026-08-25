@@ -22,8 +22,13 @@ export class PortionAdjuster implements OnInit {
 
   selectedServings = 2;
   displayedIngredients: ScaledIngredient[] = [];
+  checkedIngredients: boolean[] = [];
   isCalculating = false;
   errorMessage = '';
+
+  get checkedCount(): number {
+    return this.checkedIngredients.filter(Boolean).length;
+  }
 
   get isOriginal(): boolean {
     return this.selectedServings === this.originalServings;
@@ -59,6 +64,7 @@ export class PortionAdjuster implements OnInit {
   reset(): void {
     this.requestVersion += 1;
     this.selectedServings = this.originalServings;
+    this.checkedIngredients = [];
     this.isCalculating = false;
     this.errorMessage = '';
     this.showOriginalIngredients();
@@ -86,45 +92,12 @@ export class PortionAdjuster implements OnInit {
   }
 
   private showOriginalIngredients(): void {
-    this.displayedIngredients = (this.originalIngredients || []).map((ingredient) => {
-      const text = this.formatIngredientText(ingredient);
-      return {
-        original: text,
-        adjusted: text,
-        scalable: false,
-      };
-    });
-  }
-
-  private formatIngredientText(ing: any): string {
-    if (!ing) return '';
-    if (typeof ing === 'string') {
-      try {
-        const parsed = JSON.parse(ing);
-        if (parsed && typeof parsed === 'object' && parsed.nombre) {
-          let str = parsed.nombre;
-          if (parsed.importancia && parsed.importancia !== 'obligatorio') {
-            str += ` (${parsed.importancia})`;
-          }
-          if (parsed.importancia === 'reemplazable' && parsed.reemplazo) {
-            str += ` - Reemplazo: ${parsed.reemplazo}`;
-          }
-          return str;
-        }
-      } catch {}
-      return ing;
-    }
-    if (typeof ing === 'object' && ing.nombre) {
-      let str = ing.nombre;
-      if (ing.importancia && ing.importancia !== 'obligatorio') {
-        str += ` (${ing.importancia})`;
-      }
-      if (ing.importancia === 'reemplazable' && ing.reemplazo) {
-        str += ` - Reemplazo: ${ing.reemplazo}`;
-      }
-      return str;
-    }
-    return String(ing);
+    this.displayedIngredients = this.originalIngredients.map((ingredient) => ({
+      original: ingredient,
+      adjusted: ingredient,
+      scalable: false,
+    }));
+    this.checkedIngredients = this.displayedIngredients.map(() => false);
   }
 
   private normalizeServings(value: number): number {

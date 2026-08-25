@@ -7,6 +7,7 @@ import { Explore } from './features/pages/explore/explore';
 import { Profile } from './features/pages/profile/profile';
 import { RecipeDetail } from './features/pages/recipe-detail/recipe-detail';
 import { CookingJournal } from './features/pages/cooking-journal/cooking-journal';
+import { ShoppingList } from './features/pages/shopping-list/shopping-list';
 
 
 import { authGuard } from './shared/guards/auth.guard';
@@ -48,6 +49,11 @@ export const routes: Routes = [
   {
     path: 'cooking-journal',
     component: CookingJournal,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'shopping-list',
+    component: ShoppingList,
     canActivate: [authGuard]
   },
   { 

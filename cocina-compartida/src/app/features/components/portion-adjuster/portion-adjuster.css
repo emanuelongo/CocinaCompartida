@@ -101,6 +101,23 @@
   padding-left: 4px;
   line-height: 1.45;
 }
+.ingredient-check {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+.ingredient-check input {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: #255b43;
+  cursor: pointer;
+}
+.adjusted-ingredients li.checked .ingredient-check span {
+  color: #7c8781;
+  text-decoration: line-through;
+}
 .adjusted-ingredients small {
   display: block;
   margin-top: 2px;

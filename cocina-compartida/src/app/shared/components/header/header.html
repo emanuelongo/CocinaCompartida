@@ -37,6 +37,7 @@
 
         <nav class="main-nav">
             <a *ngIf="authService.isLoged()" routerLink="/cooking-journal" class="nav-link">Mi diario</a>
+            <a *ngIf="authService.isLoged()" routerLink="/shopping-list" class="nav-link">Lista de compras</a>
             <a routerLink="/explore" class="nav-link">Explorar</a>
             <a routerLink="/recipe-upload" class="nav-link create-recipe-link">
                 <i class="fas fa-plus-circle"></i> Crear Receta
