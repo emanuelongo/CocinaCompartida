@@ -1,0 +1,152 @@
+.portion-adjuster {
+  display: grid;
+  gap: 18px;
+}
+.portion-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.portion-heading p {
+  margin: 5px 0 0;
+  color: #637068;
+  font-size: 0.9rem;
+}
+.eyebrow {
+  color: #9d531f;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.portion-controls {
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid #cdd6d0;
+  border-radius: 12px;
+  background: #fff;
+}
+.portion-controls button {
+  width: 42px;
+  border: 0;
+  background: #f4f0ed;
+  color: #DE6F08;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+.portion-controls button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.portion-controls label {
+  display: grid;
+  place-items: center;
+  padding: 4px 8px;
+  border-inline: 1px solid #dbe1dd;
+}
+.portion-controls label span {
+  color: #68756e;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+.portion-controls input {
+  width: 58px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #203129;
+  font: inherit;
+  font-weight: 800;
+  text-align: center;
+}
+.portion-controls input::-webkit-inner-spin-button {
+  appearance: none;
+}
+.portion-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 30px;
+  color: #615145;
+  font-size: 0.85rem;
+}
+.reset-button {
+  padding: 8px 12px;
+  border: 1px solid #9d531f;
+  border-radius: 999px;
+  background: transparent;
+  color: #874619;
+  font-weight: 700;
+  cursor: pointer;
+}
+.reset-button:disabled {
+  border-color: #ccd2ce;
+  color: #8d9691;
+  cursor: not-allowed;
+}
+.adjusted-ingredients {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 22px;
+  transition: opacity 0.2s ease;
+}
+.adjusted-ingredients.loading {
+  opacity: 0.55;
+}
+.adjusted-ingredients li {
+  padding-left: 4px;
+  line-height: 1.45;
+}
+.ingredient-check {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+.ingredient-check input {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: #5b3f25;
+  cursor: pointer;
+}
+.adjusted-ingredients li.checked .ingredient-check span {
+  color: #7c8781;
+  text-decoration: line-through;
+}
+.adjusted-ingredients small {
+  display: block;
+  margin-top: 2px;
+  color: #7c8781;
+  font-size: 0.72rem;
+}
+.timing-note {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f2eee6;
+  color: #6b6254;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+.error-message {
+  color: #b42318;
+}
+
+@media (max-width: 620px) {
+  .portion-heading,
+  .portion-status {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .portion-controls {
+    width: 100%;
+  }
+  .portion-controls label {
+    flex: 1;
+  }
+}

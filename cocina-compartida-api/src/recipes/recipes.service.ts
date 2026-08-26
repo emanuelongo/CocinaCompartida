@@ -14,6 +14,10 @@ import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { User } from 'src/user/entities/user.entity';
+import {
+  ScaledIngredientsResult,
+  scaleIngredients,
+} from './ingredient-scaling';
 
 @Injectable()
 export class RecipesService {
@@ -26,11 +30,20 @@ export class RecipesService {
 
   // Crear receta
   async create(createRecipeDto: CreateRecipeDto, user: User): Promise<Recipe> {
+    const rawIngredients = createRecipeDto.ingredients ?? [];
+    const formattedIngredients = rawIngredients.map((item) => {
+      if (typeof item === 'object' && item !== null) {
+        return JSON.stringify(item);
+      }
+      return String(item);
+    });
+
     const recipe = this.recipeRepository.create({
       ...createRecipeDto,
+      ingredients: formattedIngredients,
       user,
       likes: 0,
-      likedBy: [], 
+      likedBy: [],
     });
 
     return await this.recipeRepository.save(recipe);
@@ -49,9 +62,7 @@ export class RecipesService {
     const all = await this.recipeRepository.find({
       relations: ['user', 'comments', 'comments.user'],
     });
-    return all.filter(
-      (r) => Array.isArray(r.tags) && r.tags.includes(tag),
-    );
+    return all.filter((r) => Array.isArray(r.tags) && r.tags.includes(tag));
   }
 
   // Listar top recipes por likes
@@ -83,6 +94,30 @@ export class RecipesService {
     return recipe;
   }
 
+  async scaleIngredients(
+    id: string,
+    selectedServings: number,
+  ): Promise<ScaledIngredientsResult & { recipeId: string }> {
+    if (
+      !Number.isInteger(selectedServings) ||
+      selectedServings < 1 ||
+      selectedServings > 100
+    ) {
+      throw new BadRequestException('Las porciones deben estar entre 1 y 100');
+    }
+
+    const recipe = await this.findOne(id);
+    const originalServings = recipe.servings || 2;
+    return {
+      recipeId: recipe.id,
+      ...scaleIngredients(
+        recipe.ingredients,
+        originalServings,
+        selectedServings,
+      ),
+    };
+  }
+
   // Actualizar (solo dueño)
   async update(
     id: string,
@@ -95,7 +130,17 @@ export class RecipesService {
       throw new ForbiddenException('You can only update your own recipes');
     }
 
-    Object.assign(recipe, updateRecipeDto);
+    const payload = { ...updateRecipeDto };
+    if (payload.ingredients) {
+      payload.ingredients = payload.ingredients.map((item) => {
+        if (typeof item === 'object' && item !== null) {
+          return JSON.stringify(item);
+        }
+        return String(item);
+      });
+    }
+
+    Object.assign(recipe, payload);
     return await this.recipeRepository.save(recipe);
   }
 

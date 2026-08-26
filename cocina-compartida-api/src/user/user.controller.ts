@@ -11,13 +11,14 @@ import {
   HttpCode,
   HttpStatus,
   Req,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from 'src/security/auth.guard';
 import { RoleGuard } from 'src/security/role.guard';
+import { UpdateAccessibilityPreferencesDto } from './dto/update-accessibility-preferences.dto';
 
 @Controller('users')
 export class UserController {
@@ -36,8 +37,23 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Patch()
-  update( @Body() updateUserDto: UpdateUserDto , @Req() req: any) {
+  update(@Body() updateUserDto: UpdateUserDto, @Req() req: any) {
     return this.usersService.update(req.user.id, updateUserDto);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('me/accessibility')
+  getAccessibilityPreferences(@Req() req: any) {
+    return this.usersService.getAccessibilityPreferences(req.user.id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('me/accessibility')
+  updateAccessibilityPreferences(
+    @Body() dto: UpdateAccessibilityPreferencesDto,
+    @Req() req: any,
+  ) {
+    return this.usersService.updateAccessibilityPreferences(req.user.id, dto);
   }
 
   @UseGuards(AuthGuard)

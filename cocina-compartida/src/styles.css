@@ -1,149 +1,294 @@
 :root {
-    --color-primary: #000;
-    --color-secondary: #fff;
-    --color-light-gray: #f0f0f0;
-    --color-error: #e63946;
+  /* Paleta Gastronómica Moderna */
+  --color-primary: #ea580c;           /* Naranja cálido / Terracota */
+  --color-primary-hover: #c2410c;     /* Naranja intenso */
+  --color-primary-light: #fff7ed;     /* Fondo suave anaranjado */
+  --color-primary-subtle: #ffedd5;    /* Borde / badge anaranjado */
+  
+  --color-secondary: #ffffff;
+  --color-dark: #0f172a;              /* Slate oscuro para textos y contrastes */
+  --color-dark-subtle: #1e293b;
+  
+  --color-accent-pink: #f43f5e;       /* Likes / Corazones */
+  --color-accent-pink-bg: #ffe4e6;
+  --color-accent-emerald: #10b981;    /* Éxito / Frescura */
+  --color-accent-amber: #f59e0b;      /* Valoraciones / Destacados */
+  
+  --color-bg-page: #f8fafc;           /* Fondo de página moderno y limpio */
+  --color-bg-card: #ffffff;
+  --color-bg-input: #f1f5f9;
+  --color-bg-hover: #e2e8f0;
+  
+  --color-text-main: #0f172a;         /* Título principal */
+  --color-text-body: #334155;         /* Texto general */
+  --color-text-muted: #64748b;        /* Texto secundario / gris */
+  --color-text-light: #94a3b8;
+  
+  --color-border: #e2e8f0;
+  --color-border-light: #f1f5f9;
+  --color-border-focus: #ea580c;
+  --color-error: #ef4444;
+  --color-error-bg: #fef2f2;
+  
+  /* Sombras y Elevaciones */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 25px rgba(234, 88, 12, 0.25);
+  
+  /* Radios de borde */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  
+  /* Transiciones */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layout */
+  --header-height: 72px;
+  --footer-height: auto;
 }
 
-/* 1. Estilos Base */
+/* ================================================= */
+/* 1. Reset y Estilos Base                           */
+/* ================================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-    /* Es mejor poner la fuente aquí si quieres que afecte a toda la app */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: var(--color-secondary);
-    color: var(--color-primary);
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--color-bg-page);
+  color: var(--color-text-body);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* 2. Estructura de Centrado Común (Usado tanto en Login como en Sign Up) */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  color: var(--color-text-main);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Custom modern scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ================================================= */
+/* 2. Estructuras de Contenedor Comunes              */
+/* ================================================= */
 .container {
-    width: 100%;
-    max-width: 400px;
-    padding: 60px 20px;
-    margin: 0 auto; /* Centrado horizontal */
-    box-sizing: border-box;
-    text-align: center;
+  width: 100%;
+  max-width: 460px;
+  padding: 40px 24px;
+  margin: 40px auto;
+  box-sizing: border-box;
+  text-align: center;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--color-border-light);
+  position: relative;
+  transition: transform var(--transition-normal);
 }
 
-/* 3. Botón de Retroceso (Común) */
+@media (max-width: 480px) {
+  .container {
+    margin: 20px auto;
+    padding: 30px 18px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* Botón de Retroceso */
 .back-button {
-    position: absolute;
-    top: 30px;
-    left: 30px;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    border: 1px solid var(--color-primary);
-    background-color: var(--color-secondary);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-decoration: none;
-    color: var(--color-primary);
-    cursor: pointer;
-    z-index: 10;
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-secondary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: var(--color-text-main);
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.back-button:hover {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: translateX(-3px);
 }
 
 .back-button svg {
-    width: 18px;
-    height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
-/* 4. Logo y Títulos de la Aplicación (Comunes) */
+/* ================================================= */
+/* 3. Títulos y Logotipos                            */
+/* ================================================= */
 .logo-placeholder {
-    margin-bottom: 50px;
+  margin-bottom: 24px;
 }
 
 .app-name {
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 5px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 6px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  letter-spacing: -0.03em;
 }
 
 .form-title {
-    font-size: 18px;
-    font-weight: 400;
-    margin-top: 0;
-    margin-bottom: 50px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-top: 0;
+  margin-bottom: 32px;
 }
 
-/* 5. Estilos de Input Base (Comunes) */
+/* ================================================= */
+/* 4. Estilos de Inputs Base                         */
+/* ================================================= */
 input[type="text"],
 input[type="email"],
-input[type="password"] {
-    width: 100%;
-    padding: 12px 15px;
-    border: none;
-    background-color: var(--color-light-gray);
-    border-radius: 8px;
-    box-sizing: border-box;
-    font-size: 16px;
-    color: var(--color-primary);
-    font-weight: 500;
+input[type="password"],
+textarea,
+select {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid var(--color-border);
+  background-color: var(--color-bg-input);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--color-text-main);
+  font-weight: 500;
+  transition: all var(--transition-fast);
 }
 
-input::placeholder {
-    color: #a0a0a0;
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-light);
+  font-weight: 400;
 }
 
-input:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--color-primary);
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  background-color: var(--color-secondary);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
 }
 
-/* 6. Estilos de Validación de Angular (Comunes) */
+/* ================================================= */
+/* 5. Mensajes de Validación de Angular              */
+/* ================================================= */
 .error-message {
-    color: var(--color-error);
-    font-size: 12px;
-    margin-top: -15px; /* Ajuste para que esté cerca del input */
-    margin-bottom: 5px;
-    line-height: 1.2;
+  color: var(--color-error);
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 6px;
+  margin-bottom: 4px;
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-input.ng-invalid.ng-touched {
-    border: 1px solid var(--color-error);
-    box-shadow: 0 0 0 1px var(--color-error);
+input.ng-invalid.ng-touched,
+textarea.ng-invalid.ng-touched {
+  border-color: var(--color-error);
+  background-color: var(--color-error-bg);
+}
+
+input.ng-invalid.ng-touched:focus,
+textarea.ng-invalid.ng-touched:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
 }
 
 /* ================================================= */
-/* Estilos Globales (Ejemplo: styles.css o app.component.css) */
+/* 6. Layout Principal de la Aplicación              */
 /* ================================================= */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
 
-/* 1. Hacer el Header fijo en la parte superior */
+.main-content {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .app-header {
-    position: fixed; /* Lo saca del flujo normal */
-    top: 0;          /* Lo pega al borde superior */
-    left: 0;
-    right: 0;
-    z-index: 1000;   /* Asegura que esté por encima de todo */
-    /* Altura de tu header. Ejemplo: */
-    height: 60px; 
-    background-color: white; /* Para que no sea transparente */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
 }
 
-/* 2. Hacer el Footer fijo en la parte inferior */
 .app-footer {
-    position: fixed; /* Lo saca del flujo normal */
-    bottom: 0;       /* Lo pega al borde inferior */
-    left: 0;
-    right: 0;
-    z-index: 1000;   /* Asegura que esté por encima de todo */
-    /* Altura de tu footer. Ejemplo: */
-    height: 50px; 
-    background-color: #333; /* Color de fondo del footer */
-    color: white;
-}
-
-/* 3. Ajustar el Contenido Principal (Router Outlet) */
-/* Se debe añadir padding al contenedor principal para que el contenido
-   no quede oculto detrás del header y el footer. */
-.content-container {
-    /* El valor debe ser igual o mayor a la altura del header/footer */
-    padding-top: 60px;  /* Altura del Header */
-    padding-bottom: 50px; /* Altura del Footer */
-    /* Puedes ajustar el min-height si quieres que el scroll funcione
-       incluso si el contenido es corto. */
-    min-height: 100vh;
+  margin-top: auto;
+  width: 100%;
 }

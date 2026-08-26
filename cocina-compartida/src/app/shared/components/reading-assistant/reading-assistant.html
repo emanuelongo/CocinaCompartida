@@ -1,0 +1,118 @@
+<aside
+  class="reading-assistant"
+  aria-label="Asistente de lectura de Cocina Compartida"
+  data-reader-ignore
+>
+  <button
+    *ngIf="!expanded()"
+    type="button"
+    class="reader-launcher"
+    (click)="open()"
+    aria-haspopup="dialog"
+    [attr.aria-expanded]="expanded()"
+    aria-controls="reading-assistant-panel"
+    title="Abrir asistente de lectura. Atajo: Alt + L"
+  >
+    <span aria-hidden="true" class="speaker-mark">A</span>
+    <span>Escuchar página</span>
+  </button>
+
+  <section
+    *ngIf="expanded()"
+    id="reading-assistant-panel"
+    class="reader-panel"
+    role="region"
+    aria-labelledby="reader-title"
+  >
+    <header class="reader-header">
+      <div>
+        <p class="reader-eyebrow">Accesibilidad</p>
+        <h2 id="reader-title">Asistente de lectura</h2>
+      </div>
+      <button
+        type="button"
+        class="reader-close"
+        (click)="close()"
+        aria-label="Cerrar y desactivar el asistente de lectura"
+      >
+        Cerrar
+      </button>
+    </header>
+
+    <p class="reader-help">
+      Lee el contenido principal o el texto que hayas seleccionado. No reemplaza el lector de
+      pantalla instalado en tu dispositivo.
+    </p>
+
+    <div class="reader-actions" aria-label="Controles de lectura">
+      <button
+        type="button"
+        class="primary-action"
+        (click)="readPage()"
+        [disabled]="!reader.supported"
+      >
+        Leer página
+      </button>
+      <button
+        type="button"
+        (click)="togglePause()"
+        [disabled]="reader.state() === 'idle' || !reader.supported"
+      >
+        {{ reader.state() === 'paused' ? 'Continuar' : 'Pausar' }}
+      </button>
+      <button
+        type="button"
+        (click)="reader.stop()"
+        [disabled]="reader.state() === 'idle' || !reader.supported"
+      >
+        Detener
+      </button>
+    </div>
+
+    <div class="reader-settings">
+      <label for="reader-rate">
+        Velocidad
+        <select
+          id="reader-rate"
+          [ngModel]="preferencesService.preferences().speechRate"
+          (ngModelChange)="changeRate($event)"
+          [disabled]="saving()"
+        >
+          <option *ngFor="let rate of rateOptions" [ngValue]="rate">{{ rate }}×</option>
+        </select>
+      </label>
+
+      <label for="reader-voice">
+        Voz
+        <select
+          id="reader-voice"
+          [ngModel]="preferencesService.preferences().preferredVoice || ''"
+          (ngModelChange)="changeVoice($event)"
+          [disabled]="saving() || reader.voices().length === 0"
+        >
+          <option value="">Voz automática en español</option>
+          <option *ngFor="let voice of reader.voices()" [value]="voice.name">
+            {{ voice.name }} — {{ voice.lang }}
+          </option>
+        </select>
+      </label>
+    </div>
+
+    <label class="auto-read-option">
+      <input
+        type="checkbox"
+        [ngModel]="preferencesService.preferences().autoReadEnabled"
+        (ngModelChange)="changeAutoRead($event)"
+        [disabled]="saving()"
+      />
+      Leer automáticamente al cambiar de página
+    </label>
+
+    <p class="reader-status" role="status" aria-live="polite" aria-atomic="true">
+      {{ reader.status() }}
+    </p>
+    <p class="reader-shortcuts">
+      Atajos: Alt + R para leer, Alt + L para abrir o cerrar y Escape para detener.
+    </p>
+  </section>
+</aside>

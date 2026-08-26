@@ -47,6 +47,7 @@
     "@angular/forms": "^20.2.0",
     "@angular/platform-browser": "^20.2.0",
     "@angular/router": "^20.2.0",
+    "@google/genai": "^2.18.0",
     "@supabase/supabase-js": "^2.36.0",
     "alert": "^6.0.2",
     "html2canvas": "^1.4.1",

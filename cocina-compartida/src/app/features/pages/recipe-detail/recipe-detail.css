@@ -1,368 +1,556 @@
-/* --- Base y Contenedor Principal --- */
+/* ================================================= */
+/* 1. Base y Contenedor Principal                    */
+/* ================================================= */
 .recipe-detail-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 40px 20px;
-    font-family: sans-serif;
-    color: #333;
+  max-width: 1200px;
+  margin: 2rem auto 5rem;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+  position: relative;
 }
 
+/* Botón flotante de regreso */
 .back-button {
-    background: none;
-    border: none;
-    color: #007bff;
-    font-size: 1em;
-    cursor: pointer;
-    margin-bottom: 20px;
-    padding: 40px;
-    transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text-main);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
 }
 
 .back-button:hover {
-    color: #0056b3;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: translateX(-4px);
 }
 
-/* --- Encabezado --- */
+.back-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ================================================= */
+/* 2. Encabezado de la Receta                        */
+/* ================================================= */
 .recipe-main-header {
-    text-align: center;
-    margin-bottom: 40px;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
 .recipe-main-header h1 {
-    font-size: 3em;
-    font-weight: 700;
-    margin: 0;
-    color: #2c3e50;
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: var(--color-dark);
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
 }
 
-.recipe-main-header p {
-    font-size: 1.5em;
-    color: #7f8c8d;
-    margin: 5px 0 0 0;
+.recipe-main-header > p {
+  font-size: 1.15rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto 1.5rem;
 }
 
-/* --- Estilos para Acciones del Propietario y Descarga --- */
+.likes-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-accent-pink-bg);
+  color: var(--color-accent-pink);
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  margin-bottom: 1.5rem;
+}
+
+.likes-summary i {
+  color: var(--color-accent-pink);
+}
+
+/* --- Acciones de Propietario y Descarga --- */
 .owner-actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 25px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
 }
 
 .admin-actions,
 .download-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.owner-actions button {
-    border: none;
-    padding: 10px 18px;
-    border-radius: 8px;
-    font-size: 0.95em;
-    font-weight: 600;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.admin-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition-fast);
 }
 
-.owner-actions button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.admin-actions button:first-child {
+  background-color: var(--color-dark);
+  color: white;
 }
 
-.admin-actions button:first-of-type {
-    background-color: #007bff; /* Azul primario */
+.admin-actions button:first-child:hover {
+  background-color: var(--color-primary);
+  transform: translateY(-2px);
 }
 
-.admin-actions button:first-of-type:hover {
-    background-color: #0056b3;
+.admin-actions button:last-child {
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-.admin-actions button:last-of-type {
-    background-color: #dc3545; /* Rojo para indicar peligro/eliminar */
-}
-
-.admin-actions button:last-of-type:hover {
-    background-color: #c82333;
+.admin-actions button:last-child:hover {
+  background-color: var(--color-error);
+  color: white;
+  transform: translateY(-2px);
 }
 
 .download-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition-fast);
 }
 
 .pdf-btn {
-    background-color: #e74c3c; /* Color para PDF */
+  background: linear-gradient(135deg, var(--color-primary) 0%, #d97706 100%);
+  color: white;
+  box-shadow: 0 2px 10px rgba(239, 102, 68, 0.25);
 }
 
 .pdf-btn:hover {
-    background-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
 }
 
 .image-btn {
-    background-color: #16a085; /* Color para imagen */
+  background: linear-gradient(135deg, var(--color-primary) 0%, #281086 100%);
+  color: white;
+  box-shadow: 0 2px 10px rgba(22, 16, 185, 0.25);
 }
 
 .image-btn:hover {
-    background-color: #117a65;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(16, 61, 185, 0.4);
 }
 
-
-/* --- Carrusel de Imágenes --- */
+/* ================================================= */
+/* 3. Carrusel de Imágenes                           */
+/* ================================================= */
 .image-carousel {
-    position: relative;
-    width: 100%;
-    max-height: 500px;
-    overflow: hidden;
-    margin-bottom: 40px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  width: 100%;
+  height: 480px;
+  max-height: 60vh;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  margin-bottom: 2.5rem;
+  box-shadow: var(--shadow-lg);
+  background-color: #0f172a;
 }
 
 .recipe-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.3s ease-in-out;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .carousel-controls {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    transform: translateY(-50%);
-    padding: 0 10px;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+  padding: 0 1rem;
+  pointer-events: none;
 }
 
 .control-btn {
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    padding: 15px 10px;
-    cursor: pointer;
-    font-size: 24px;
-    line-height: 1;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s;
+  pointer-events: all;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
 .control-btn:hover {
-    background: rgba(0, 0, 0, 0.8);
+  background: var(--color-primary);
+  transform: scale(1.1);
 }
 
 .image-counter {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 0.9em;
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  color: white;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-/* --- Secciones de Ingredientes y Pasos --- */
+/* ================================================= */
+/* 4. Info del Autor                                 */
+/* ================================================= */
+.author-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 2rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.author-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-primary-subtle);
+}
+
+.author-info span {
+  font-size: 0.95rem;
+  color: var(--color-text-body);
+}
+
+.author-info strong {
+  color: var(--color-dark);
+}
+
+.author-info:hover strong {
+  color: var(--color-primary);
+}
+
+/* ================================================= */
+/* 5. Contenido: Ingredientes y Pasos en 2 Columnas  */
+/* ================================================= */
 .sections-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 30px;
-    justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 2rem;
+  margin-bottom: 3.5rem;
 }
 
 .ingredients-section,
 .steps-section {
-    flex: 1 1 300px;
-    padding: 30px;
-    border-radius: 8px;
-    min-height: 250px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    background-color: #f8f9f9;
+  background: var(--color-bg-card);
+  padding: 2rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
 }
 
 .ingredients-section h2,
 .steps-section h2 {
-    font-size: 1.5em;
-    color: #2c3e50;
-    margin-top: 0;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--color-primary-subtle);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-dark);
 }
 
-.ingredients-section ul,
 .steps-section ol {
-    padding-left: 20px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  counter-reset: step;
 }
 
-.ingredients-section li {
-    margin-bottom: 10px;
+.steps-section ol li {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 1.25rem;
+  background: var(--color-bg-input);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-body);
 }
 
-.steps-section li {
-    margin-bottom: 15px;
-    line-height: 1.6;
+.steps-section ol li::before {
+  counter-increment: step;
+  content: counter(step);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #d97706 100%);
+  color: white;
+  font-weight: 800;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.3);
 }
 
-/* --- Información del Autor --- */
-.author-info {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 40px;
-    font-size: 1.1em;
-    color: #555;
-}
-
-.author-avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 10px;
-    border: 2px solid #bdc3c7;
-}
-
-/* --- NUEVO: Sección de Comentarios --- */
+/* ================================================= */
+/* 6. Sección de Comentarios                         */
+/* ================================================= */
 .comments-section {
-    margin-top: 50px;
+  background: var(--color-bg-card);
+  padding: 2.5rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
 }
 
-.comments-section h2 {
-    font-size: 1.8em;
-    color: #2c3e50;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 10px;
-    margin-bottom: 30px;
+.comments-section > h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-dark);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--color-primary-subtle);
 }
 
-/* Formulario para nuevo comentario */
 .comment-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
 }
 
 .comment-form textarea {
-    width: 100%;
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-family: inherit;
-    font-size: 1em;
-    resize: vertical;
-    min-height: 100px;
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg-input);
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.comment-form textarea:focus {
+  background: white;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+  outline: none;
 }
 
 .comment-form button {
-    align-self: flex-end; /* Alinea el botón a la derecha */
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #d97706 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(234, 88, 12, 0.25);
+  transition: all var(--transition-fast);
 }
 
 .comment-form button:hover {
-    background-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
 }
 
-/* Lista de comentarios */
 .comments-list {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .comment-item {
-    display: flex;
-    gap: 15px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.comment-item:last-child {
-    border-bottom: none;
+  display: flex;
+  gap: 16px;
+  padding: 1.25rem;
+  background: var(--color-bg-input);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
 }
 
 .comment-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--color-border);
+  flex-shrink: 0;
 }
 
 .comment-body {
-    flex: 1;
+  flex: 1;
 }
 
 .comment-meta {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
 }
 
 .comment-meta strong {
-    font-size: 1.1em;
-    color: #2c3e50;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-dark);
 }
 
-.comment-meta .comment-date {
-    font-size: 0.85em;
-    color: #7f8c8d;
+.comment-date {
+  font-size: 0.8rem;
+  color: var(--color-text-light);
 }
 
 .comment-text {
-    margin: 0;
-    line-height: 1.6;
+  margin: 0;
+  line-height: 1.5;
+  font-size: 0.92rem;
+  color: var(--color-text-body);
 }
 
 .no-comments {
-    text-align: center;
-    color: #777;
-    font-style: italic;
-    padding: 20px;
-    background-color: #f8f9f9;
-    border-radius: 8px;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: var(--color-bg-input);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-muted);
+  font-size: 1rem;
 }
 
+/* ================================================= */
+/* 7. Estado 404 / Error                             */
+/* ================================================= */
+.error-message {
+  text-align: center;
+  padding: 5rem 2rem;
+  max-width: 500px;
+  margin: 3rem auto;
+  background: white;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--color-border);
+}
 
-/* --- Responsive para dispositivos pequeños --- */
-@media (max-width: 768px) {
-    .sections-container {
-        flex-direction: column;
-    }
+.error-message h1 {
+  font-size: 4rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin: 0 0 1rem 0;
+}
 
-    .recipe-detail-container {
-        padding: 20px 15px;
-    }
+.error-message p {
+  font-size: 1.15rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.5rem;
+}
 
-    .recipe-main-header h1 {
-        font-size: 2.2em;
-    }
+.error-message button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #d97706 100%);
+  color: white;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(234, 88, 12, 0.25);
+  transition: all var(--transition-fast);
+}
 
-    .recipe-main-header p {
-        font-size: 1.2em;
-    }
+.error-message button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+}
+
+/* ================================================= */
+/* 8. Responsividad                                  */
+/* ================================================= */
+@media (max-width: 900px) {
+  .sections-container {
+    grid-template-columns: 1fr;
+  }
+
+  .recipe-main-header {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .image-carousel {
+    height: 320px;
+  }
+
+  .comments-section {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .error-message {
+    padding: 3rem 1.5rem;
+    margin: 2rem 1rem;
+  }
 }

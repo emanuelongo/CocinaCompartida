@@ -64,14 +64,22 @@ export class RecipeDataService {
     } as Recipe;
   }
 
-  saveRecipe(formData: any, images: string[]): void {
+  async saveRecipe(formData: any, images: string[]): Promise<boolean> {
     if (this.isEditMode && this.recipeIdToEdit) {
-      this.recipeService.updateRecipe(this.recipeIdToEdit, formData);
-      this.router.navigate(['/recipe', this.recipeIdToEdit]);
+      const updated = await this.recipeService.updateRecipe(this.recipeIdToEdit, formData);
+      if (updated) {
+        this.router.navigate(['/recipe', this.recipeIdToEdit]);
+        return true;
+      }
+      return false;
     } else {
       const recipe = this.createRecipeObject(formData, images);
-      this.recipeService.addRecipe(recipe);
-      this.router.navigate(['home']);
+      const created = await this.recipeService.addRecipe(recipe);
+      if (created) {
+        this.router.navigate(['home']);
+        return true;
+      }
+      return false;
     }
   }
 

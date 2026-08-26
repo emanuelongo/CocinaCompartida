@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { Comment } from './comment.entity';
+import { CookingExperience } from '../../cooking-journal/entities/cooking-experience.entity';
 
 @Entity('recipes')
 export class Recipe {
@@ -24,17 +25,26 @@ export class Recipe {
   @Column('text', { array: true, nullable: false, default: [] })
   ingredients: string[];
 
+  @Column({ type: 'int', default: 2 })
+  servings: number;
+
   @Column('text', { array: true, nullable: false, default: [] })
   steps: string[];
 
   @Column('text', { array: true, nullable: false, default: [] })
   images: string[];
 
-  @ManyToOne(() => User, (u) => u.recipes, { onDelete: 'CASCADE', eager: false })
+  @ManyToOne(() => User, (u) => u.recipes, {
+    onDelete: 'CASCADE',
+    eager: false,
+  })
   user: User;
 
   @OneToMany(() => Comment, (c) => c.recipe, { cascade: true })
   comments: Comment[];
+
+  @OneToMany(() => CookingExperience, (experience) => experience.recipe)
+  cookingExperiences?: CookingExperience[];
 
   @Column('text', { array: true, nullable: true, default: [] })
   tags: string[];

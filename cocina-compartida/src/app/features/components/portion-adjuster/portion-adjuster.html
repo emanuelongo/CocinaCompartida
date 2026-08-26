@@ -1,0 +1,72 @@
+<div class="portion-adjuster">
+  <div class="portion-heading">
+    <div>
+      <span class="eyebrow">Ajustar cantidades</span>
+      <p>
+        Receta original para <strong>{{ originalServings }} personas</strong>
+      </p>
+    </div>
+
+    <div class="portion-controls" aria-label="Selector de número de porciones">
+      <button
+        type="button"
+        (click)="decrease()"
+        [disabled]="selectedServings <= 1"
+        aria-label="Disminuir porciones"
+      >
+        −
+      </button>
+      <label>
+        <span>Personas</span>
+        <input
+          type="number"
+          min="1"
+          max="100"
+          step="1"
+          [ngModel]="selectedServings"
+          (ngModelChange)="onServingsChange($event)"
+          aria-label="Número de personas"
+        />
+      </label>
+      <button
+        type="button"
+        (click)="increase()"
+        [disabled]="selectedServings >= 100"
+        aria-label="Aumentar porciones"
+      >
+        +
+      </button>
+    </div>
+  </div>
+
+  <div class="portion-status" aria-live="polite">
+    <span *ngIf="isCalculating">Recalculando cantidades...</span>
+    <span *ngIf="!isCalculating && !isOriginal && !errorMessage">
+      Cantidades ajustadas para {{ selectedServings }} personas
+    </span>
+    <span *ngIf="errorMessage" class="error-message">{{ errorMessage }}</span>
+    <button type="button" class="reset-button" (click)="reset()" [disabled]="isOriginal">
+      Volver a cantidades originales
+    </button>
+  </div>
+
+  <p class="checklist-status" aria-live="polite">
+    {{ checkedCount }} de {{ displayedIngredients.length }} ingredientes listos
+  </p>
+
+  <ul class="adjusted-ingredients" [class.loading]="isCalculating">
+    <li *ngFor="let ingredient of displayedIngredients; let index = index" [class.checked]="checkedIngredients[index]">
+      <label class="ingredient-check">
+        <input
+          type="checkbox"
+          [(ngModel)]="checkedIngredients[index]"
+          [attr.aria-label]="'Marcar ' + ingredient.adjusted + ' como disponible'"
+        />
+        <span>{{ ingredient.adjusted }}</span>
+      </label>
+      <small *ngIf="!isOriginal && !ingredient.scalable">Se mantiene sin cambios</small>
+    </li>
+  </ul>
+
+  <p class="timing-note">Los tiempos y temperaturas de cocción no se modifican automáticamente.</p>
+</div>

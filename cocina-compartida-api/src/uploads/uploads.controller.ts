@@ -13,20 +13,9 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { memoryStorage } from 'multer';
 import { AuthGuard } from 'src/security/auth.guard';
 import { SupabaseStorageService } from './supabase-storage.service';
-
-const IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
-
-const imageFileFilter = (_req: any, file: Express.Multer.File, cb: any) => {
-  if (IMAGE_MIME_TYPES.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new BadRequestException('Tipo de archivo no permitido. Use JPEG, PNG, WebP o GIF'), false);
-  }
-};
+import { imageUploadOptions } from './image-upload.config';
 
 @Controller('uploads')
 export class UploadsController {
@@ -37,9 +26,7 @@ export class UploadsController {
   @Post('avatar')
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: memoryStorage(),
-      limits: { fileSize: MAX_FILE_SIZE },
-      fileFilter: imageFileFilter,
+      ...imageUploadOptions,
     }),
   )
   async uploadAvatar(
@@ -61,9 +48,7 @@ export class UploadsController {
   @Post('recipes/:recipeId')
   @UseInterceptors(
     FilesInterceptor('files', 10, {
-      storage: memoryStorage(),
-      limits: { fileSize: MAX_FILE_SIZE },
-      fileFilter: imageFileFilter,
+      ...imageUploadOptions,
     }),
   )
   async uploadRecipeImages(

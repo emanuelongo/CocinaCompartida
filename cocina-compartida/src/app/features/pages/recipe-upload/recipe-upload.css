@@ -1,299 +1,391 @@
-/* Variables (Si no están definidas en los estilos globales, inclúyelas) */
-/*
-:root {
-    --color-primary: #000;
-    --color-secondary: #fff;
-    --color-light-gray: #f0f0f0;
-    --color-text-gray: #6e6e6e;
-    --color-error: #e63946;
-}
-*/
-
 /* ======================================= */
-/* 1. Contenedor Principal y Título */
+/* 1. Contenedor Principal y Header        */
 /* ======================================= */
-
 .recipe-container {
-    /* Reutiliza el ancho y centrado del .container global */
-    width: 100%;
-    max-width: 600px; /* Un poco más ancho que el login/signup para mejor espacio de receta */
-    padding: 40px 20px;
-    margin: 40px auto;
-    box-sizing: border-box;
-    text-align: left;
-    background-color: var(--color-secondary);
+  width: 100%;
+  max-width: 800px;
+  padding: 2.5rem 1.5rem;
+  margin: 2rem auto 5rem;
+  box-sizing: border-box;
 }
 
-.recipe-container h2 {
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 30px;
+.upload-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
 }
 
-select {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: white;
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 1rem;
+.upload-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary-subtle);
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
 }
 
-select:hover {
-    border-color: #3498db;
+.upload-header h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: 800;
+  color: var(--color-dark);
+  margin: 0 0 0.5rem 0;
 }
 
-select:focus {
-    outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+.upload-subtitle {
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 /* ======================================= */
-/* 2. Grupos de Formulario (Label + Input) */
+/* 2. Tarjetas de Sección                  */
 /* ======================================= */
+.form-section-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2rem;
+  transition: all var(--transition-fast);
+}
 
+.form-section-card:focus-within {
+  border-color: rgba(234, 88, 12, 0.4);
+  box-shadow: var(--shadow-md);
+}
+
+.section-badge-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1.5px solid var(--color-border-light);
+}
+
+.step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #d97706 100%);
+  color: white;
+  font-weight: 800;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.3);
+}
+
+.section-badge-title h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-dark);
+}
+
+/* ======================================= */
+/* 3. Grupos de Formulario y Campos        */
+/* ======================================= */
 .form-group {
-    margin-bottom: 30px;
-    display: flex;
-    flex-direction: column;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
 }
 
-.form-group label {
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 8px;
-    display: block;
-    color: var(--color-primary);
+.form-group:last-child {
+  margin-bottom: 0;
 }
 
-/* Reutilizando el estilo de input global */
-.recipe-container input[type="text"],
-.recipe-container textarea {
-    width: 100%;
-    padding: 12px 15px;
-    border: none;
-    background-color: var(--color-light-gray);
-    border-radius: 8px;
-    box-sizing: border-box;
-    font-size: 16px;
-    color: var(--color-primary);
-    font-weight: 500;
-    resize: vertical; /* Permite redimensionar el textarea */
-    min-height: 40px;
-    line-height: 1.5;
+.form-group label,
+.form-label-title,
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-body);
 }
 
-.recipe-container textarea {
-    min-height: 100px; /* Altura inicial más grande para pasos */
+.form-group label i {
+  color: var(--color-primary);
+  font-size: 0.95rem;
 }
 
-/* Enfocar */
-.recipe-container input:focus,
-.recipe-container textarea:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--color-primary);
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
 }
 
+legend {
+  display: none;
+}
 
 /* ======================================= */
-/* 3. Campos Dinámicos (Ingredientes y Pasos) */
+/* 4. Campos Dinámicos (Ingredientes/Pasos)*/
 /* ======================================= */
-
 .dynamic-field {
-    display: flex;
-    align-items: flex-start; /* Alineación superior para el botón de la textarea */
-    gap: 10px;
-    margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0.75rem;
+}
+
+.step-dynamic-field {
+  align-items: flex-start;
+}
+
+.field-index-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step-badge {
+  margin-top: 10px;
 }
 
 .dynamic-field input,
 .dynamic-field textarea {
-    flex-grow: 1;
-    margin: 0; /* Anulamos el margin-bottom para un mejor espaciado dentro del array */
+  flex: 1;
 }
 
-.dynamic-field button[type="button"] {
-    background-color: var(--color-error);
-    color: var(--color-secondary);
-    border: none;
-    border-radius: 8px;
-    width: 35px;
-    height: 35px;
-    padding: 0;
-    font-size: 14px;
-    cursor: pointer;
-    flex-shrink: 0; /* Evita que el botón se haga pequeño */
-    margin-top: 5px; /* Ajuste visual para alinear con el input/textarea */
+.remove-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
 }
 
-.dynamic-field button[type="button"]:hover {
-    background-color: #c4303d;
+.remove-btn:hover {
+  background: var(--color-error);
+  color: white;
+  transform: scale(1.05);
 }
 
-/* Botones "Agregar" */
-.form-group > button[type="button"] {
-    background: none;
-    border: 1px dashed var(--color-text-gray);
-    color: var(--color-text-gray);
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s;
+.add-field-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border: 1.5px dashed var(--color-primary);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  align-self: flex-start;
 }
 
-.form-group > button[type="button"]:hover {
-    background-color: var(--color-light-gray);
-    color: var(--color-primary);
-    border-color: var(--color-primary);
+.add-field-btn:hover {
+  background: var(--color-primary);
+  color: white;
+  transform: translateY(-1px);
 }
 
 /* ======================================= */
-/* 4. Subida de Imágenes */
+/* 5. Subida de Imágenes y Carrusel        */
 /* ======================================= */
-
-/* Ocultar el input de archivo real */
-.form-group input[type="file"] {
-    display: none;
+input[type="file"] {
+  display: none;
 }
 
-/* Estilo para el label (que actúa como botón de subida) */
-.form-group label.upload {
-    display: block;
-    text-align: center;
-    padding: 12px 20px;
-    cursor: pointer;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    
-    /* Estilo Iniciar Sesión */
-    background-color: var(--color-primary);
-    color: var(--color-secondary);
-    transition: background-color 0.2s;
+label.upload.primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 24px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border: 2px dashed var(--color-primary);
+  border-radius: var(--radius-lg);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
 }
 
-.form-group label.upload:hover {
-    background-color: #333;
+label.upload.primary:hover {
+  background: rgba(234, 88, 12, 0.12);
+  transform: translateY(-2px);
 }
 
+label.upload.primary i {
+  font-size: 1.4rem;
+}
 
-/* ======================================= */
-/* 5. Carrusel de Imágenes */
-/* ======================================= */
-
+/* Carrusel preview */
 .carousel {
-    position: relative;
-    margin: 30px 0;
-    border-radius: 10px;
-    overflow: hidden; /* Oculta partes de la imagen que sobresalgan */
+  position: relative;
+  margin-top: 1.5rem;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  background: #0f172a;
+}
+
+.carousel-img-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
 }
 
 .carousel img {
-    width: 100%;
-    height: auto;
-    display: block;
-    aspect-ratio: 16 / 9; /* Mantiene una relación de aspecto consistente */
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.img-counter-pill {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px);
+  color: white;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .carousel .nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    font-size: 20px;
-    z-index: 5;
-    transition: background 0.2s;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  z-index: 5;
+  transition: all var(--transition-fast);
 }
 
 .carousel .nav:hover {
-    background: rgba(0, 0, 0, 0.8);
+  background: var(--color-primary);
+  transform: translateY(-50%) scale(1.1);
 }
 
 .carousel .left {
-    left: 10px;
-    border-radius: 5px;
+  left: 12px;
 }
 
 .carousel .right {
-    right: 10px;
-    border-radius: 5px;
+  right: 12px;
 }
 
-/* Botón para eliminar la imagen actualmente visible */
 .carousel .delete-btn {
-    position: absolute;
-    top: 10px;
-    right: 50px; /* dejar espacio para la flecha derecha */
-    z-index: 10;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
-    border: none;
-    padding: 8px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  background: rgba(239, 68, 68, 0.85);
+  backdrop-filter: blur(6px);
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all var(--transition-fast);
 }
 
 .carousel .delete-btn:hover {
-    background: rgba(0,0,0,0.85);
+  background: var(--color-error);
+  transform: scale(1.1);
 }
 
 /* ======================================= */
-/* 6. Botón Final "Guardar Receta" */
+/* 6. Botón Guardar / Publicar             */
 /* ======================================= */
-
-.recipe-container > button[type="button"] {
-    width: 100%;
-    padding: 15px;
-    background-color: var(--color-primary);
-    color: var(--color-secondary);
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    margin-top: 10px;
+.submit-action-wrapper {
+  margin-top: 2rem;
+  text-align: center;
 }
 
-.recipe-container > button[type="button"]:hover {
-    background-color: #333;
+.submit-recipe-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 400px;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #d97706 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(234, 88, 12, 0.35);
+  transition: all var(--transition-fast);
+}
+
+.submit-recipe-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(234, 88, 12, 0.45);
 }
 
 /* ======================================= */
-/* 7. Mensajes de Error */
+/* 7. Responsive                           */
 /* ======================================= */
+@media (max-width: 600px) {
+  .recipe-container {
+    padding: 1.5rem 1rem;
+  }
 
-.error-message {
-    color: var(--color-error);
-    font-size: 12px;
-    margin-top: 5px;
-    font-weight: 500;
-}
+  .form-section-card {
+    padding: 1.5rem 1.2rem;
+    border-radius: var(--radius-lg);
+  }
 
-/* Estilo para campos inválidos */
-.recipe-container input.ng-invalid.ng-touched,
-.recipe-container textarea.ng-invalid.ng-touched {
-    border: 1px solid var(--color-error);
-    background-color: #ffe6e6;
-}
-
-.recipe-container input:focus.ng-invalid.ng-touched,
-.recipe-container textarea:focus.ng-invalid.ng-touched {
-    box-shadow: 0 0 0 2px var(--color-error);
-}
+  .submit-recipe-btn {
+    max-width: 100%;
+  }
+}

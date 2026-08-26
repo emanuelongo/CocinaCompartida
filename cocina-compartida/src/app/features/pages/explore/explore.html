@@ -1,53 +1,114 @@
 <div class="explore-container">
-  <h1>Explora las Recetas</h1>
+  <div class="explore-header">
+    <div class="header-badge">Descubre el sabor</div>
+    <h1 class="page-title">Explora las Recetas</h1>
+    <p class="page-subtitle">Encuentra platos deliciosos de toda la comunidad o busca por tus ingredientes favoritos</p>
+    <button class="surprise-button" type="button" (click)="surpriseMe()">
+      <i class="fas fa-dice"></i>
+      Sorpréndeme
+    </button>
+  </div>
 
+  <!-- Category Filter Pills Carousel -->
+  <div class="category-pills-wrapper">
+    <div class="category-pills">
+      <button 
+        *ngFor="let cat of categories" 
+        class="category-pill-btn" 
+        [class.active]="searchService.currentCategory() === cat.id"
+        (click)="selectCategory(cat.id)">
+        <span class="cat-icon">{{ cat.icon }}</span>
+        <span class="cat-name">{{ cat.name }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Active Search/Filter Status Bar -->
+  <div class="filter-status-bar" *ngIf="searchService.currentQuery() || searchService.currentCategory() !== 'todas'">
+    <div class="active-filter-tags">
+      <span class="filter-tag" *ngIf="searchService.currentQuery()">
+        <i class="fas fa-search"></i> "{{ searchService.currentQuery() }}"
+      </span>
+      <span class="filter-tag" *ngIf="searchService.currentCategory() !== 'todas'">
+        <i class="fas fa-tag"></i> {{ searchService.currentCategory() }}
+      </span>
+    </div>
+    <button class="clear-filter-mini-btn" (click)="clearSearch()">
+      <i class="fas fa-times"></i> Limpiar filtros
+    </button>
+  </div>
+
+  <!-- Empty States -->
   <div *ngIf="allRecipes().length === 0 && !searchService.currentQuery()" class="no-recipes">
+    <div class="no-data-icon">🍲</div>
     <p>Aún no se han cargado recetas. ¡Sube la primera!</p>
+    <a routerLink="/recipe-upload" class="primary-btn">Subir Receta</a>
   </div>
 
   <div *ngIf="allRecipes().length === 0 && (searchService.currentQuery() || searchService.currentCategory() !== 'todas')" class="no-results">
+    <div class="no-data-icon">🔍</div>
     <p>No se encontraron recetas que coincidan con los filtros aplicados</p>
     <button class="clear-search" (click)="clearSearch()">Limpiar filtros</button>
   </div>
 
   <div *ngIf="allRecipes().length === 0 && searchService.currentQuery() && searchService.suggestions().length === 0" class="no-results">
+    <div class="no-data-icon">🍳</div>
     <p>La receta "{{ searchService.currentQuery() }}" no ha sido encontrada</p>
     <button class="clear-search" (click)="clearSearch()">Buscar otra receta</button>
   </div>
 
+  <!-- Recipe Cards Grid -->
   <div class="recipe-list" *ngIf="allRecipes().length > 0">
     <div class="recipe-card" *ngFor="let recipe of recipesToShow(); trackBy: trackByRecipeId">
+      
+      <!-- Image Section -->
       <div class="recipe-image">
-        <img *ngIf="recipe.images.length > 0; else noImage" [src]="recipe.images[0]" alt="Foto de {{ recipe.name }}">
+        <img *ngIf="recipe.images.length > 0; else noImage" [src]="recipe.images[0]" [alt]="'Foto de ' + recipe.name" class="recipe-thumbnail" loading="lazy">
         <ng-template #noImage>
           <div class="placeholder-image">
-            <span>Sin Imagen</span>
+            <i class="fas fa-camera"></i>
+            <span>Sin Foto</span>
           </div>
         </ng-template>
+
+        <!-- Category Pill Overlay -->
+        <span class="recipe-category-pill" *ngIf="recipe.category">
+          {{ recipe.category }}
+        </span>
+
+        <!-- Like Button Overlay -->
+        <button (click)="toggleLike(recipe.id)" class="like-button" [class.liked]="hasLiked(recipe)" aria-label="Dar me gusta">
+          <i class="fa fa-heart"></i>
+          <span>{{ recipe.likes }}</span>
+        </button>
       </div>
+
+      <!-- Info Section -->
       <div class="recipe-info">
-        <h2>{{ recipe.name }}</h2>
+        <h2 class="recipe-name" [routerLink]="['/recipe', recipe.id]">{{ recipe.name }}</h2>
         <p class="recipe-description">{{ recipe.descripcion }}</p>
         
-        <div class="author-info">
-          <img
-            [src]="recipe.user.avatar ?? 'assets/placeholder-avatar.png'"
-            [alt]="'Avatar de ' + (recipe.user.username )"
-            class="avatar clickable"
-            [routerLink]="['/profile', recipe.user.id]"
-          />
-          <span class="author-name clickable" [routerLink]="['/profile', recipe.user.id]">Creado por {{ recipe.user.username  }}</span>
-        </div>
-        
-        <div class="recipe-actions">
-          <button (click)="toggleLike(recipe.id)" class="like-button" [class.liked]="hasLiked(recipe)">
-            <i class="fa fa-heart"></i> {{ recipe.likes }}
-          </button>
-          <button [routerLink]="['/recipe', recipe.id]" class="view-button">Ver Receta</button>
+        <div class="recipe-card-footer">
+          <div class="author-info" [routerLink]="['/profile', recipe.user.id]">
+            <img
+              [src]="recipe.user.avatar || 'assets/placeholder-avatar.png'"
+              [alt]="'Avatar de ' + recipe.user.username"
+              class="avatar clickable"
+            />
+            <span class="author-name clickable">Creado por {{ recipe.user.username }}</span>
+          </div>
+          
+          <div class="recipe-actions">
+            <button [routerLink]="['/recipe', recipe.id]" class="view-button">
+              <span>Ver Receta</span>
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
+    <!-- Loading Spinner -->
     <div *ngIf="isLoading()" class="loading-spinner">
       <div class="spinner"></div>
       <p>Cargando más recetas...</p>
@@ -55,7 +116,9 @@
 
     <div #loadMoreTrigger class="load-more-trigger"></div>
 
+    <!-- End Message -->
     <div *ngIf="visibleRecipeCount() >= allRecipes().length && allRecipes().length > 0" class="end-message">
+      <div class="end-icon">🎉</div>
       <p>¡Has llegado al final de las recetas! 🎉</p>
     </div>
   </div>

@@ -1,8 +1,16 @@
 import { Injectable, inject } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RecipeFormService {
   private fb = inject(FormBuilder);
@@ -14,23 +22,58 @@ export class RecipeFormService {
     return hasLetter ? null : { meaningfulText: true };
   }
 
-  createRecipeForm(): FormGroup {
+  createIngredientGroup(nombre = '', importancia = '', reemplazo = ''): FormGroup {
     return this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(2), RecipeFormService.meaningfulText]],
-      descripcion: ['', [Validators.required, Validators.minLength(10), RecipeFormService.meaningfulText]],
-      category: ['', [Validators.required]],
-      ingredients: this.fb.array([this.fb.control('', [Validators.required, RecipeFormService.meaningfulText])]),
-      steps: this.fb.array([this.fb.control('', [Validators.required, RecipeFormService.meaningfulText])])
+      nombre: [nombre, [Validators.required, RecipeFormService.meaningfulText]],
+      importancia: [importancia || 'obligatorio'],
+      reemplazo: [reemplazo]
     });
   }
 
-  clearAndLoadFormArray(formArray: FormArray, items: string[]): void {
-    formArray.clear();
-    items.forEach(item => formArray.push(this.fb.control(item, Validators.required)));
+  createRecipeForm(): FormGroup {
+    return this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(2), RecipeFormService.meaningfulText]],
+      descripcion: [
+        '',
+        [Validators.required, Validators.minLength(10), RecipeFormService.meaningfulText],
+      ],
+      category: ['', [Validators.required]],
+      servings: [
+        2,
+        [Validators.required, Validators.min(1), Validators.max(100), Validators.pattern(/^\d+$/)],
+      ],
+      ingredients: this.fb.array([this.createIngredientGroup()]),
+      steps: this.fb.array([
+        this.fb.control('', [Validators.required, RecipeFormService.meaningfulText]),
+      ]),
+    });
   }
 
-  addFormArrayItem(formArray: FormArray): void {
-    formArray.push(this.fb.control('', [Validators.required, RecipeFormService.meaningfulText]));
+  clearAndLoadFormArray(formArray: FormArray, items: any[]): void {
+    formArray.clear();
+    items.forEach(item => {
+      if (typeof item === 'string') {
+        // Compatibilidad con recetas guardadas en formato antiguo
+        formArray.push(this.createIngredientGroup(item, 'obligatorio', ''));
+      } else if (item && typeof item === 'object') {
+        formArray.push(this.createIngredientGroup(item.nombre ?? item.name ?? '', item.importancia ?? 'obligatorio', item.reemplazo ?? ''));
+      } else {
+        formArray.push(this.createIngredientGroup());
+      }
+    });
+  }
+
+  clearAndLoadStepsArray(formArray: FormArray, items: string[]): void {
+    formArray.clear();
+    items.forEach((item) => formArray.push(this.fb.control(item, Validators.required)));
+  }
+
+  addFormArrayItem(formArray: FormArray, isIngredient = false): void {
+    if (isIngredient) {
+      formArray.push(this.createIngredientGroup());
+    } else {
+      formArray.push(this.fb.control('', [Validators.required, RecipeFormService.meaningfulText]));
+    }
   }
 
   removeFormArrayItem(formArray: FormArray, index: number, minItems: number = 1): boolean {
@@ -42,10 +85,10 @@ export class RecipeFormService {
   }
 
   markAllFieldsAsTouched(form: FormGroup): void {
-    Object.keys(form.controls).forEach(key => {
+    Object.keys(form.controls).forEach((key) => {
       const control = form.get(key);
       if (control instanceof FormArray) {
-        control.controls.forEach(arrayControl => {
+        control.controls.forEach((arrayControl) => {
           arrayControl.markAsTouched();
         });
       } else {
@@ -61,19 +104,28 @@ export class RecipeFormService {
 
   validateArrayField(formArray: FormArray, index: number): boolean {
     const control = formArray.at(index);
+    if (control instanceof FormGroup) {
+      const nombreCtrl = control.get('nombre');
+      return nombreCtrl ? nombreCtrl.invalid && nombreCtrl.touched : false;
+    }
     return control.invalid && control.touched;
   }
 
   prepareFormData(form: FormGroup, images: string[]): any {
-    const filteredIngredients = form.value.ingredients
-      .filter((ing: string) => ing?.trim() !== '');
-    const filteredSteps = form.value.steps
-      .filter((step: string) => step?.trim() !== '');
+    const filteredIngredients = (form.value.ingredients as any[])
+      .filter((ing: any) => ing?.nombre?.trim() !== '')
+      .map((ing: any) => ({
+        nombre: ing.nombre.trim(),
+        importancia: ing.importancia || 'obligatorio',
+        reemplazo: ing.importancia === 'reemplazable' ? (ing.reemplazo ?? '').trim() : '',
+      }));
+    const filteredSteps = form.value.steps.filter((step: string) => step?.trim() !== '');
 
     return {
       name: form.value.name.trim(),
       descripcion: form.value.descripcion.trim(),
       category: form.value.category,
+      servings: Number(form.value.servings),
       ingredients: filteredIngredients,
       steps: filteredSteps,
       images: images,

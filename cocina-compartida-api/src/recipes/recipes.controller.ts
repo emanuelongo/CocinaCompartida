@@ -12,6 +12,7 @@ import {
   Req,
   Res,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { join } from 'path';
 import type { Response } from 'express';
@@ -24,7 +25,7 @@ import { RecipeOwnerGuard } from 'src/security/recipe-owner.guard';
 
 @Controller('recipes')
 export class RecipesController {
-  constructor(private readonly recipesService: RecipesService) { }
+  constructor(private readonly recipesService: RecipesService) {}
 
   // Crear receta (autenticado)
   @UseGuards(AuthGuard)
@@ -43,6 +44,14 @@ export class RecipesController {
   @Get('top-liked')
   findTopLiked() {
     return this.recipesService.findTopLiked();
+  }
+
+  @Get(':id/scaled-ingredients')
+  scaleIngredients(
+    @Param('id') id: string,
+    @Query('servings', ParseIntPipe) servings: number,
+  ) {
+    return this.recipesService.scaleIngredients(id, servings);
   }
 
   // Ver una (público)
@@ -69,7 +78,11 @@ export class RecipesController {
   // Comentarios (autenticado)
   @UseGuards(AuthGuard)
   @Post(':id/comments')
-  addComment(@Param('id') id: string, @Body() dto: CreateCommentDto, @Req() req) {
+  addComment(
+    @Param('id') id: string,
+    @Body() dto: CreateCommentDto,
+    @Req() req,
+  ) {
     return this.recipesService.createComment(id, dto, req.user);
   }
 
@@ -106,7 +119,7 @@ export class RecipesController {
     if (format === 'image') {
       if (Array.isArray(recipe.images) && recipe.images.length > 0) {
         const imgUrl = recipe.images[0];
-        
+
         // Si la URL es de Supabase (o cualquier URL absoluta), simplemente redirigimos
         if (imgUrl.startsWith('http://') || imgUrl.startsWith('https://')) {
           return res.redirect(imgUrl);
@@ -132,8 +145,13 @@ export class RecipesController {
     const doc = new PDFDocument({ size: 'A4', margin: 50 });
 
     res.setHeader('Content-Type', 'application/pdf');
-    const safeName = (recipe.name || 'recipe').replaceAll(/[^a-z0-9]/gi, '_').toLowerCase();
-    res.setHeader('Content-Disposition', `attachment; filename="${safeName}.pdf"`);
+    const safeName = (recipe.name || 'recipe')
+      .replaceAll(/[^a-z0-9]/gi, '_')
+      .toLowerCase();
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${safeName}.pdf"`,
+    );
 
     doc.pipe(res);
 
@@ -148,7 +166,36 @@ export class RecipesController {
     if (Array.isArray(recipe.ingredients) && recipe.ingredients.length) {
       doc.fontSize(14).text('Ingredientes:');
       doc.fontSize(12);
-      recipe.ingredients.forEach((ing: string, i: number) => doc.text(`${i + 1}. ${ing}`));
+      recipe.ingredients.forEach((ing: any, i: number) => {
+        let text = `${i + 1}. `;
+        if (typeof ing === 'string') {
+          try {
+            const parsed = JSON.parse(ing);
+            if (parsed && typeof parsed === 'object' && parsed.nombre) {
+              text += parsed.nombre;
+              if (parsed.importancia && parsed.importancia !== 'obligatorio') {
+                text += ` (${parsed.importancia})`;
+              }
+              if (parsed.importancia === 'reemplazable' && parsed.reemplazo) {
+                text += ` - Reemplazo: ${parsed.reemplazo}`;
+              }
+            } else {
+              text += ing;
+            }
+          } catch {
+            text += ing;
+          }
+        } else if (ing && typeof ing === 'object') {
+          text += ing.nombre || '';
+          if (ing.importancia && ing.importancia !== 'obligatorio') {
+            text += ` (${ing.importancia})`;
+          }
+          if (ing.importancia === 'reemplazable' && ing.reemplazo) {
+            text += ` - Reemplazo: ${ing.reemplazo}`;
+          }
+        }
+        doc.text(text);
+      });
       doc.moveDown();
     }
 

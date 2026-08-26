@@ -1,5 +1,13 @@
 // src/recipes/dto/create-recipe.dto.ts
-import { IsString, IsArray, IsOptional, ArrayMinSize } from 'class-validator';
+import {
+  IsString,
+  IsArray,
+  IsOptional,
+  ArrayMinSize,
+  IsInt,
+  Min,
+  Max,
+} from 'class-validator';
 
 export class CreateRecipeDto {
   @IsString()
@@ -8,15 +16,23 @@ export class CreateRecipeDto {
   @IsString()
   descripcion: string;
 
-  @IsArray() @ArrayMinSize(1)
-  @IsString({ each: true })
-  ingredients: string[];
+  @IsArray()
+  @ArrayMinSize(1)
+  ingredients: any[];
 
-  @IsArray() @ArrayMinSize(1)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  @IsOptional()
+  servings?: number;
+
+  @IsArray()
+  @ArrayMinSize(1)
   @IsString({ each: true })
   steps: string[];
 
-  @IsArray() @IsOptional()
+  @IsArray()
+  @IsOptional()
   @IsString({ each: true })
   images?: string[];
 

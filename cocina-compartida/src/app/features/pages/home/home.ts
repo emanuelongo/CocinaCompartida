@@ -94,4 +94,10 @@ export class Home {
       console.error('Error toggling like:', error);
     }
   }
+
+  hasLiked(recipe: Recipe): boolean {
+    const userId = this.authService.getCurrentUser()?.id;
+    if (!userId || !recipe.likedBy) return false;
+    return recipe.likedBy.includes(userId);
+  }
 }

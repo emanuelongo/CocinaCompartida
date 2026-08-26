@@ -1,45 +1,66 @@
 <div *ngIf="user() as currentUser" class="profile-container">
 
+  <!-- Profile Hero / Header Card -->
   <header class="profile-header">
-    <img [src]="currentUser.avatar || 'https://via.placeholder.com/150'" [alt]="'Avatar de ' + currentUser.username"
-      class="profile-avatar">
+    <div class="profile-avatar-wrapper">
+      <img [src]="currentUser.avatar || 'assets/placeholder-avatar.png'" [alt]="'Avatar de ' + currentUser.username"
+        class="profile-avatar">
+      <span class="chef-badge-icon" *ngIf="isOwnProfile()">👨‍🍳</span>
+    </div>
+
     <h1 class="user-name">{{ currentUser.username }}</h1>
-    <p *ngIf="currentUser.email" class="user-handle">{{ currentUser.email }}</p>
+    <p *ngIf="currentUser.email" class="user-handle"><i class="fas fa-envelope"></i> {{ currentUser.email }}</p>
     
-    <!-- Añadir la biografía aquí -->
-    <p *ngIf="currentUser.bio" class="user-bio">{{ currentUser.bio }}</p>
+    <!-- User Biography -->
+    <p *ngIf="currentUser.bio" class="user-bio">"{{ currentUser.bio }}"</p>
     
-    <button *ngIf="isOwnProfile()" class="update-profile-btn" (click)="openUpdateProfile()">Actualizar Perfil</button>
+    <!-- Stats Row -->
+    <div class="profile-stats-row">
+      <div class="stat-box">
+        <span class="stat-number">{{ createdRecipes().length }}</span>
+        <span class="stat-label">Recetas</span>
+      </div>
+      <div class="stat-box" *ngIf="isOwnProfile()">
+        <span class="stat-number">{{ favoriteRecipes().length }}</span>
+        <span class="stat-label">Favoritos</span>
+      </div>
+    </div>
+
+    <button *ngIf="isOwnProfile()" class="update-profile-btn" (click)="openUpdateProfile()">
+      <i class="fas fa-user-edit"></i>
+      <span>Actualizar Perfil</span>
+    </button>
   </header>
 
+  <!-- Edit Profile Modal -->
   <div class="modal-overlay" *ngIf="modalVisible">
     <div class="modal-content-custom">
 
       <header class="modal-header-custom">
         <h2 class="modal-title">Actualizar Perfil</h2>
-        <button class="close-btn" (click)="closeUpdateProfile()">&times;</button>
+        <button class="close-btn" (click)="closeUpdateProfile()" aria-label="Cerrar ventana">&times;</button>
       </header>
 
       <div class="modal-body-custom">
         <div class="form-group">
-          <label for="username">Nombre de usuario</label>
+          <label for="username"><i class="fas fa-user"></i> Nombre de usuario</label>
           <input type="text" id="username" [(ngModel)]="newUsername" class="form-control" />
         </div>
 
         <div class="form-group">
-          <label for="password">Nueva contraseña</label>
+          <label for="password"><i class="fas fa-lock"></i> Nueva contraseña</label>
           <input type="password" id="password" [(ngModel)]="newPassword" class="form-control"
-            placeholder="(Opcional)" />
+            placeholder="Dejar vacío si no deseas cambiarla" />
         </div>
 
         <div class="form-group">
-          <label for="bio">Biografía</label>
+          <label for="bio"><i class="fas fa-quote-left"></i> Biografía</label>
           <textarea id="bio" [(ngModel)]="newBio" class="form-control" rows="3"
-            placeholder="Cuéntanos un poco sobre ti..."></textarea>
+            placeholder="Cuéntanos un poco sobre tus gustos culinarios..."></textarea>
         </div>
 
         <div class="form-group">
-          <label for="avatar">Foto de perfil</label>
+          <label for="avatar"><i class="fas fa-camera"></i> Foto de perfil</label>
           <input type="file" id="avatar" (change)="onAvatarSelected($event)" accept="image/*"
             class="form-control file-input" />
           <div *ngIf="newAvatar" class="avatar-preview">
@@ -57,31 +78,40 @@
     </div>
   </div>
 
+  <!-- Navigation Tabs -->
   <nav class="profile-tabs">
     <button class="tab-button" [class.active]="activeTab() === 'created'" (click)="selectTab('created')">
-      {{ isOwnProfile() ? 'Mis Recetas' : 'Recetas' }}
+      <i class="fas fa-utensils"></i>
+      <span>{{ isOwnProfile() ? 'Mis Recetas' : 'Recetas' }} ({{ createdRecipes().length }})</span>
     </button>
     <button *ngIf="isOwnProfile()" class="tab-button" [class.active]="activeTab() === 'favorites'" (click)="selectTab('favorites')">
-      Favoritos
+      <i class="fas fa-heart"></i>
+      <span>Favoritos ({{ favoriteRecipes().length }})</span>
     </button>
   </nav>
 
+  <!-- Recipes Grid Tab Content -->
   <main class="tab-content">
     <div *ngIf="displayedRecipes().length > 0; else noRecipes" class="recipe-grid">
       <div *ngFor="let recipe of displayedRecipes()" class="recipe-card">
-        <img [routerLink]="['/recipe', recipe.id]"
-          [src]="recipe.images[0] || 'https://via.placeholder.com/300x200?text=Receta'"
-          [alt]="recipe.name" class="recipe-image">
+        <div class="recipe-card-img-wrap" [routerLink]="['/recipe', recipe.id]">
+          <img
+            [src]="recipe.images[0] || 'assets/logos/default.webp'"
+            [alt]="recipe.name" class="recipe-image" loading="lazy">
+          <span class="recipe-likes-badge"><i class="fa fa-heart"></i> {{ recipe.likes || 0 }}</span>
+        </div>
         <div [routerLink]="['/recipe', recipe.id]" class="recipe-info">
           <h3>{{ recipe.name }}</h3>
-          <p>Por {{ recipe.user.username }}</p>
-          <p class="likes"><i class="fa fa-heart"></i> {{ recipe.likes || 0 }}</p>
+          <p class="recipe-author-sub">Por {{ recipe.user.username }}</p>
+          <p class="likes"><i class="fa fa-heart"></i> {{ recipe.likes || 0 }} me gusta</p>
         </div>
       </div>
     </div>
     <ng-template #noRecipes>
       <div class="no-recipes-message">
+        <div class="no-recipes-icon">📖</div>
         <p>{{ isOwnProfile() ? 'Aún no tienes' : 'Aún no hay' }} recetas en esta sección.</p>
+        <a *ngIf="isOwnProfile()" routerLink="/recipe-upload" class="primary-btn">¡Crear mi primera receta!</a>
       </div>
     </ng-template>
   </main>

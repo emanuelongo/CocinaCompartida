@@ -185,6 +185,36 @@ describe('Explore Component – Pruebas Unitarias', () => {
     });
   });
 
+  describe('Sorpréndeme', () => {
+    it('navega al detalle de una receta disponible', () => {
+      component.surpriseMe();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/recipe', jasmine.any(String)]);
+    });
+
+    it('no navega cuando no hay recetas disponibles', () => {
+      mockRecipeService.recipes = fakeSignal<Recipe[]>([]);
+      mockSearchService.results = fakeSignal<Recipe[]>([]);
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [Explore],
+        providers: [
+          provideRouter([]),
+          { provide: RecipeService, useValue: mockRecipeService },
+          { provide: Auth, useValue: mockAuthService },
+          { provide: Router, useValue: mockRouter },
+          { provide: SearchService, useValue: mockSearchService }
+        ]
+      });
+      const fixture = TestBed.createComponent(Explore);
+
+      fixture.componentInstance.surpriseMe();
+
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+    });
+  });
+
   // ──────────────────────────────────────────────────────────
   //  EXP-06 a EXP-09: toggleLike
   // ──────────────────────────────────────────────────────────

@@ -1,118 +1,111 @@
-/* Estilos Específicos para el Formulario de Login */
-
-/* Nota: La mayoría de los estilos (input, label, container, etc.)
-   se están heredando de 'global-styles.css' */
-
+/* Estilos para el Formulario de Login */
 form {
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    gap: 20px; /* Espacio entre grupos de label/input */
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
 label {
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 8px;
-    display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+  color: var(--color-text-body);
 }
 
 /* Ocultar iconos nativos de navegadores para campos password */
 input::-ms-reveal,
 input::-ms-clear {
-    display: none;
+  display: none;
 }
 
-/* Ajuste del margen del input para acercarlo al label */
 form input:not(.password-wrapper input) {
-    margin-top: -8px; 
-    margin-bottom: 20px; 
+  margin-bottom: 0.5rem;
 }
 
 .password-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-    margin-top: -8px;
-    margin-bottom: 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .password-wrapper input {
-    width: 100%;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-right: 45px;
-    box-sizing: border-box;
+  width: 100%;
+  padding-right: 48px;
+  box-sizing: border-box;
 }
 
 .toggle-password {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #666;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    z-index: 2;
-    height: 24px;
-    width: 24px;
-    transition: color 0.2s;
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  z-index: 2;
+  height: 24px;
+  width: 24px;
+  transition: color var(--transition-fast);
 }
 
 .toggle-password:hover {
-    color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 /* --- Botones --- */
-
-/* 1. Botón Principal (Iniciar Sesión) */
 .login-btn {
-    margin-top: 10px; /* Espacio después del último input */
-    width: 100%;
-    max-width: 200px; /* Ancho más corto, como en la imagen */
-    align-self: center; /* Centra el botón si es más corto */
-    padding: 15px;
-    
-    /* Colores y Estilos principales (reutilizan variables globales) */
-    background-color: var(--color-primary);
-    color: var(--color-secondary);
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
+  margin-top: 1rem;
+  width: 100%;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #d97706 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3);
+  transition: all var(--transition-fast);
 }
 
-.login-btn:hover {
-    background-color: #333;
+.login-btn:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4);
 }
 
-/* 2. Botón Secundario (Crear Cuenta) */
+.login-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .create-account-link-btn {
-    margin-top: 20px;
-    width: 100%;
-    max-width: 200px; /* Mismo ancho que el botón de login */
-    display: inline-block; /* Necesario para que el max-width funcione en 'a' */
-    padding: 15px;
-    
-    /* Invertir colores para el botón secundario */
-    background-color: var(--color-secondary);
-    color: var(--color-primary);
-    border: 1px solid var(--color-primary); /* Borde para que se note */
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    text-decoration: none; /* Quitar el subrayado del enlace */
-    cursor: pointer;
-    transition: background-color 0.2s;
+  margin-top: 1rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  background-color: var(--color-bg-card);
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-full);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: all var(--transition-fast);
 }
 
 .create-account-link-btn:hover {
-    background-color: var(--color-light-gray);
-}
+  background-color: var(--color-primary-light);
+  transform: translateY(-2px);
+}

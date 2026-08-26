@@ -5,10 +5,10 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
-
 } from 'typeorm';
 import { Comment } from 'src/recipes/entities/comment.entity';
 import { Recipe } from 'src/recipes/entities/recipe.entity';
+import { CookingExperience } from '../../cooking-journal/entities/cooking-experience.entity';
 
 @Entity('users')
 export class User {
@@ -38,6 +38,9 @@ export class User {
   @OneToMany(() => Comment, (comment) => comment.user, { cascade: true })
   comments?: Comment[];
 
+  @OneToMany(() => CookingExperience, (experience) => experience.user)
+  cookingExperiences?: CookingExperience[];
+
   @Column({ type: 'boolean', name: 'is_active', default: true })
   isActive?: boolean;
 
@@ -50,5 +53,24 @@ export class User {
   @Column({ default: 'user' })
   role: string;
 
+  @Column({
+    type: 'boolean',
+    name: 'reading_assistant_enabled',
+    default: false,
+  })
+  readingAssistantEnabled: boolean;
 
+  @Column({ type: 'boolean', name: 'auto_read_enabled', default: false })
+  autoReadEnabled: boolean;
+
+  @Column({ type: 'real', name: 'speech_rate', default: 1 })
+  speechRate: number;
+
+  @Column({
+    type: 'varchar',
+    name: 'preferred_voice',
+    length: 120,
+    nullable: true,
+  })
+  preferredVoice?: string | null;
 }

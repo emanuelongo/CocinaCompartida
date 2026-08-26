@@ -26,6 +26,29 @@ export class Explore implements AfterViewInit, OnDestroy {
   private observer?: IntersectionObserver;
 
   searchService = inject(SearchService);
+
+  readonly categories = [
+    { id: 'todas', name: 'Todas', icon: '🍽️' },
+    { id: 'entradas', name: 'Entradas', icon: '🥗' },
+    { id: 'platos-fuertes', name: 'Platos Fuertes', icon: '🍲' },
+    { id: 'postres', name: 'Postres', icon: '🍰' },
+    { id: 'bebidas', name: 'Bebidas', icon: '🍹' },
+    { id: 'guarniciones', name: 'Guarniciones', icon: '🥔' }
+  ];
+
+  selectCategory(catId: string) {
+    this.searchService.filterByCategory(catId);
+  }
+
+  surpriseMe(): void {
+    const recipes = this.allRecipes();
+    if (recipes.length === 0) return;
+
+    const randomIndex = crypto.getRandomValues(new Uint32Array(1))[0] % recipes.length;
+    const randomRecipe = recipes[randomIndex];
+    this.router.navigate(['/recipe', randomRecipe.id]);
+  }
+
   readonly allRecipes = computed(() =>
     this.searchService.results().length > 0
       ? this.searchService.results()

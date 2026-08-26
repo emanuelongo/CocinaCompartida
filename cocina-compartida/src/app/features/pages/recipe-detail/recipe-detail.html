@@ -1,106 +1,153 @@
 <div class="recipe-detail-container" *ngIf="recipe; else notFound">
-    <a routerLink="/home" class="back-button">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round" />
-        </svg>
-    </a>
+  <a routerLink="/home" class="back-button">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M15 18L9 12L15 6"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </a>
 
-    <div class="recipe-main-header">
-        <h1>{{ recipe.name }}</h1>
-        <p>{{ recipe.descripcion }}</p>
-        <div class="likes-summary"><i class="fa fa-heart"></i> {{ recipe.likes || 0 }} me gusta</div>
-        <div class="owner-actions">
-            <div *ngIf="canEdit()" class="admin-actions">
-                <button (click)="goToEdit()">Editar receta</button>
-                <button (click)="deleteRecipe()">Eliminar</button>
-            </div>
-            <div class="download-actions" *ngIf="authService.isLoged()">
-                <button (click)="downloadPDF()" class="download-btn pdf-btn">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-8-6z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                        <path d="M14 2v6h6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                    </svg>
-                    Descargar PDF
-                </button>
-                <button (click)="downloadImage()" class="download-btn image-btn" *ngIf="recipe.images && recipe.images.length > 0">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
-                        <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
-                        <path d="m21 15-5-5-6 6-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Descargar Imagen
-                </button>
-            </div>
-        </div>
+  <div class="recipe-main-header">
+    <h1>{{ recipe.name }}</h1>
+    <p>{{ recipe.descripcion }}</p>
+    <div class="likes-summary"><i class="fa fa-heart"></i> {{ recipe.likes || 0 }} me gusta</div>
+    <div class="owner-actions">
+      <div *ngIf="canEdit()" class="admin-actions">
+        <button (click)="goToEdit()">Editar receta</button>
+        <button (click)="deleteRecipe()">Eliminar</button>
+      </div>
+      <div class="download-actions" *ngIf="authService.isLoged()">
+        <button (click)="downloadPDF()" class="download-btn pdf-btn">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-8-6z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linejoin="round"
+            />
+            <path d="M14 2v6h6" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+          </svg>
+          Descargar PDF
+        </button>
+        <button
+          (click)="downloadImage()"
+          class="download-btn image-btn"
+          *ngIf="recipe.images && recipe.images.length > 0"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+          >
+            <rect
+              x="3"
+              y="3"
+              width="18"
+              height="18"
+              rx="2"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+            <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
+            <path
+              d="m21 15-5-5-6 6-4-4"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Descargar Imagen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="image-carousel" *ngIf="recipe.images && recipe.images.length > 0">
+    <img [src]="recipe.images[currentIndex]" [alt]="recipe.name" class="recipe-image" />
+
+    <div class="carousel-controls" *ngIf="recipe.images.length > 1">
+      <button (click)="prevImage()" class="control-btn prev-btn">❮</button>
+      <button (click)="nextImage()" class="control-btn next-btn">❯</button>
     </div>
 
-    <div class="image-carousel" *ngIf="recipe.images && recipe.images.length > 0">
-        <img [src]="recipe.images[currentIndex]" [alt]="recipe.name" class="recipe-image">
+    <div class="image-counter">{{ currentIndex + 1 }} / {{ recipe.images.length }}</div>
+  </div>
 
-        <div class="carousel-controls" *ngIf="recipe.images.length > 1">
-            <button (click)="prevImage()" class="control-btn prev-btn">❮</button>
-            <button (click)="nextImage()" class="control-btn next-btn">❯</button>
-        </div>
+  <div class="author-info" *ngIf="recipe.user">
+    <img [src]="getAvatarUrl(recipe.user.avatar)" alt="Avatar" class="author-avatar" />
+    <span
+      >Creado por: <strong>{{ recipe.user.username }}</strong></span
+    >
+  </div>
 
-        <div class="image-counter">
-            {{ currentIndex + 1 }} / {{ recipe.images.length }}
-        </div>
+  <div class="sections-container">
+    <div class="ingredients-section">
+      <h2>Ingredientes</h2>
+      <app-portion-adjuster
+        [recipeId]="recipe.id"
+        [originalIngredients]="recipe.ingredients"
+        [originalServings]="recipe.servings || 2"
+      >
+      </app-portion-adjuster>
     </div>
 
-    <div class="author-info" *ngIf="recipe.user">
-        <img [src]="getAvatarUrl(recipe.user.avatar)" alt="Avatar" class="author-avatar">
-        <span>Creado por: <strong>{{ recipe.user.username }}</strong></span>
+    <div class="steps-section">
+      <h2>Pasos</h2>
+      <ol>
+        <li *ngFor="let step of recipe.steps">{{ step }}</li>
+      </ol>
+    </div>
+  </div>
+
+  <app-cooking-experience-panel [recipeId]="recipe.id" [recipeName]="recipe.name">
+  </app-cooking-experience-panel>
+  <br>
+  <div class="comments-section">
+    <h2>Comentarios</h2>
+
+    <div class="comment-form">
+      <textarea [(ngModel)]="newComment" placeholder="Escribe tu comentario..."></textarea>
+      <button (click)="submitComment()">Comentar</button>
     </div>
 
-    <div class="sections-container">
-
-        <div class="ingredients-section">
-            <h2>Ingredientes</h2>
-            <ul>
-                <li *ngFor="let ingredient of recipe.ingredients">{{ ingredient }}</li>
-            </ul>
+    <div
+      *ngIf="recipe.comments && recipe.comments.length > 0; else noComments"
+      class="comments-list"
+    >
+      <div class="comment-item" *ngFor="let c of recipe.comments">
+        <img [src]="getAvatarUrl(c.user.avatar)" class="comment-avatar" alt="avatar" />
+        <div class="comment-body">
+          <div class="comment-meta">
+            <strong>{{ c.user.username }}</strong>
+            <span class="comment-date">{{ c.createdAt | date: 'short' }}</span>
+          </div>
+          <p class="comment-text">{{ c.message }}</p>
         </div>
-
-        <div class="steps-section">
-            <h2>Pasos</h2>
-            <ol>
-                <li *ngFor="let step of recipe.steps">{{ step }}</li>
-            </ol>
-        </div>
+      </div>
     </div>
-
-    <div class="comments-section">
-        <h2>Comentarios</h2>
-
-        <div class="comment-form">
-            <textarea [(ngModel)]="newComment" placeholder="Escribe tu comentario..."></textarea>
-            <button (click)="submitComment()">Comentar</button>
-        </div>
-
-        <div *ngIf="recipe.comments && recipe.comments.length > 0; else noComments" class="comments-list">
-            <div class="comment-item" *ngFor="let c of recipe.comments">
-                <img [src]="getAvatarUrl(c.user.avatar)" class="comment-avatar" alt="avatar">
-                <div class="comment-body">
-                    <div class="comment-meta">
-                        <strong>{{ c.user.username }}</strong>
-                        <span class="comment-date">{{ c.createdAt | date:'short' }}</span>
-                    </div>
-                    <p class="comment-text">{{ c.message }}</p>
-                </div>
-            </div>
-        </div>
-        <ng-template #noComments>
-            <p class="no-comments">Aún no hay comentarios. ¡Sé el primero en comentar!</p>
-        </ng-template>
-    </div>
-
+    <ng-template #noComments>
+      <p class="no-comments">Aún no hay comentarios. ¡Sé el primero en comentar!</p>
+    </ng-template>
+  </div>
 </div>
 
 <ng-template #notFound>
-    <div class="error-message">
-        <h1>404</h1>
-        <p>Receta no encontrada.</p>
-        <button [routerLink]="['/home']">Volver al inicio</button>
-    </div>
+  <div class="error-message">
+    <h1>404</h1>
+    <p>Receta no encontrada.</p>
+    <button [routerLink]="['/home']">Volver al inicio</button>
+  </div>
 </ng-template>

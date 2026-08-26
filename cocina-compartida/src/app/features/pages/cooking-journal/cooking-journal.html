@@ -1,0 +1,99 @@
+<main class="journal-page">
+  <header class="journal-hero">
+    <div>
+      <span class="eyebrow">Mi experiencia cocinando</span>
+      <h1>Un registro de todo lo que aprendo en la cocina</h1>
+      <p>Revisa resultados, ajustes y recomendaciones de cada preparación.</p>
+    </div>
+    <a routerLink="/explore" class="explore-link">Buscar otra receta</a>
+  </header>
+
+  <section class="summary" aria-label="Resumen del diario">
+    <div>
+      <strong>{{ experiences.length }}</strong
+      ><span>Preparaciones</span>
+    </div>
+    <div>
+      <strong>{{ cookedRecipes }}</strong
+      ><span>Recetas cocinadas</span>
+    </div>
+    <div>
+      <strong>{{ averageRating }}</strong
+      ><span>Calificación promedio</span>
+    </div>
+  </section>
+
+  <p *ngIf="isLoading" class="state-message">Cargando tu diario...</p>
+  <div *ngIf="hasError" class="state-message error-state">
+    <p>No pudimos cargar tu diario.</p>
+    <button type="button" (click)="load()">Intentar nuevamente</button>
+  </div>
+  <div
+    *ngIf="!isLoading && !hasError && experiences.length === 0"
+    class="state-message empty-state"
+  >
+    <h2>Tu diario está listo para la primera historia</h2>
+    <p>Elige una receta, prepárala y registra cómo quedó.</p>
+    <a routerLink="/explore">Explorar recetas</a>
+  </div>
+
+  <section
+    *ngIf="!isLoading && experiences.length"
+    class="timeline"
+    aria-label="Historial de preparaciones"
+  >
+    <article *ngFor="let experience of experiences" class="journal-entry">
+      <div class="entry-photo">
+        <img
+          *ngIf="experience.photoUrl; else recipePhoto"
+          [src]="experience.photoUrl"
+          [alt]="'Resultado de ' + experience.recipe.name"
+        />
+        <ng-template #recipePhoto>
+          <img
+            *ngIf="experience.recipe.images?.length; else noPhoto"
+            [src]="experience.recipe.images![0]"
+            [alt]="experience.recipe.name"
+          />
+        </ng-template>
+        <ng-template #noPhoto><div class="photo-placeholder">Sin fotografía</div></ng-template>
+      </div>
+
+      <div class="entry-body">
+        <div class="entry-heading">
+          <div>
+            <time>{{ experience.createdAt | date: 'd MMMM y, h:mm a' }}</time>
+            <h2>
+              <a [routerLink]="['/recipe', experience.recipe.id]">{{ experience.recipe.name }}</a>
+            </h2>
+          </div>
+          <span class="stars" [attr.aria-label]="experience.rating + ' de 5 estrellas'">
+            <span *ngFor="let value of ratingScale" [class.muted]="value > experience.rating"
+              >★</span
+            >
+          </span>
+        </div>
+
+        <div class="notes-grid">
+          <div *ngIf="experience.preparationNotes">
+            <h3>Notas</h3>
+            <p>{{ experience.preparationNotes }}</p>
+          </div>
+          <div *ngIf="experience.ingredientChanges">
+            <h3>Cambios realizados</h3>
+            <p>{{ experience.ingredientChanges }}</p>
+          </div>
+          <div *ngIf="experience.recommendations">
+            <h3>Para la próxima vez</h3>
+            <p>{{ experience.recommendations }}</p>
+          </div>
+        </div>
+
+        <div class="entry-actions">
+          <a [routerLink]="['/recipe', experience.recipe.id]">Volver a la receta</a>
+          <button type="button" (click)="remove(experience)">Eliminar</button>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>

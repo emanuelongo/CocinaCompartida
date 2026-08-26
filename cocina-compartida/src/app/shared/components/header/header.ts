@@ -23,6 +23,9 @@ export class Header {
   selectedCategory = 'todas';
   showSuggestions = signal(false);
   selectedSuggestionIndex = signal(-1);
+  isMobileMenuOpen = signal(false);
+  // Menú desplegable del usuario
+  userMenuOpen = signal(false);
 
   readonly categories = [
     { id: 'todas', name: 'Todas las recetas' },
@@ -33,11 +36,30 @@ export class Header {
     { id: 'guarniciones', name: 'Guarniciones' }
   ];
 
+  toggleMobileMenu() {
+    this.isMobileMenuOpen.update(open => !open);
+  }
+
+  closeMobileMenu() {
+    this.isMobileMenuOpen.set(false);
+  }
+
+  // Menú del usuario
+  toggleUserMenu() {
+    this.userMenuOpen.update(open => !open);
+  }
+
+  closeUserMenu() {
+    this.userMenuOpen.set(false);
+  }
+
   goToLogin() {
+    this.closeMobileMenu();
     this.router.navigate(['/login']);
   }
 
   onSearch() {
+    this.closeMobileMenu();
     this.showSuggestions.set(false);
     this.selectedSuggestionIndex.set(-1);
     this.searchService.search(this.searchQuery);
@@ -108,12 +130,14 @@ export class Header {
   }
 
   onCategoryChange(categoryId: string) {
+    this.closeMobileMenu();
     this.selectedCategory = categoryId;
     this.searchService.filterByCategory(categoryId);
     this.router.navigate(['/explore']);
   }
 
   onSortChange() {
+    this.closeMobileMenu();
     this.searchService.setSortOption(this.sortOption);
     this.router.navigate(['/explore']);
   }

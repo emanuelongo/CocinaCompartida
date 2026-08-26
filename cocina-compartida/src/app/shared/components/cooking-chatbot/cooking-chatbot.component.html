@@ -1,0 +1,57 @@
+<div class="chatbot-container">
+  <!-- Botón flotante -->
+  <button class="chatbot-toggle" (click)="toggleChat()" [class.open]="isOpen" title="Chat Asistente de Cocina">
+    <span class="chat-icon" *ngIf="!isOpen">💬</span>
+    <span class="close-icon" *ngIf="isOpen">✕</span>
+  </button>
+
+  <!-- Ventana del chat -->
+  <div class="chat-window" [class.open]="isOpen">
+    <!-- Header -->
+    <div class="chat-header">
+      <h3>👨‍🍳 Asistente de Cocina</h3>
+      <p class="chat-subtitle">Estoy aquí para ayudarte</p>
+    </div>
+
+    <!-- Mensajes -->
+    <div class="chat-messages">
+      <div *ngFor="let msg of messages" [class]="'message message-' + msg.sender">
+        <div class="message-bubble">
+          <p [innerHTML]="msg.text | safeHtml"></p>
+          <span class="message-time">{{ msg.timestamp | date: 'HH:mm' }}</span>
+        </div>
+      </div>
+
+      <!-- Indicador de escritura -->
+      <div *ngIf="isLoading" class="message message-assistant">
+        <div class="message-bubble typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-container">
+      <label for="chat-input-field" class="sr-only">Escribe tu pregunta</label>
+      <input
+        id="chat-input-field"
+        type="text"
+        class="chat-input"
+        [(ngModel)]="userInput"
+        (keypress)="onKeyPress($event)"
+        placeholder="Pregunta algo..."
+        [disabled]="isLoading"
+      />
+      <button class="send-btn" (click)="sendMessage()" [disabled]="!userInput.trim() || isLoading">
+        ↑
+      </button>
+    </div>
+
+    <!-- Footer con sugerencias -->
+    <div class="chat-footer">
+      <small>Prueba: técnicas, ingredientes, qué cocinar, presentación</small>
+    </div>
+  </div>
+</div>

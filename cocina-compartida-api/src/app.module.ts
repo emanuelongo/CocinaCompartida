@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UploadsModule } from './uploads/uploads.module';
 import { SeederModule } from './seeder/seeder.module';
+import { CookingJournalModule } from './';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { SeederModule } from './seeder/seeder.module';
     AuthModule,
     RecipesModule,
     UploadsModule,
-    SeederModule
+    SeederModule,
+    CookingJournalModule
   ],
 })
 export class AppModule {}

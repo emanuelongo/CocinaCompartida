@@ -1,0 +1,65 @@
+services:
+
+  db:
+    image: postgres:15-alpine
+    container_name: cocina_compartida_db_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-cocina_compartida_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-cocina_compartida_db}"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: node:20-alpine
+    container_name: cocina_compartida_backend_dev
+    working_dir: /usr/src/app
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME:-cocina_compartida_db}
+      DB_SSL: false
+      JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./cocina-compartida-api:/usr/src/app
+      - backend_node_modules:/usr/src/app/node_modules
+      - uploads_data:/usr/src/app/uploads
+    command: sh -c "npm install && npm run start:dev"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    image: node:20-alpine
+    container_name: cocina_compartida_frontend_dev
+    working_dir: /usr/src/app
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./cocina-compartida:/usr/src/app
+      - frontend_node_modules:/usr/src/app/node_modules
+    command: sh -c "npm install && npm start -- --host 0.0.0.0 --poll 1000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  uploads_data:
+  backend_node_modules:
+  frontend_node_modules:

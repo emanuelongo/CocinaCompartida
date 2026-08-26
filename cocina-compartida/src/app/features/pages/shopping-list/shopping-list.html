@@ -1,0 +1,46 @@
+<main class="shopping-page">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">Planificación</span>
+      <h1>Lista de compras</h1>
+      <p>Selecciona recetas y reúne sus ingredientes en una sola lista.</p>
+    </div>
+    <button type="button" class="clear-button" (click)="clearList()" [disabled]="selectedRecipeIds().length === 0">
+      Limpiar selección
+    </button>
+  </header>
+
+  <section class="recipe-picker" aria-labelledby="recipe-picker-title">
+    <div class="section-heading">
+      <h2 id="recipe-picker-title">Recetas seleccionadas</h2>
+      <span>{{ selectedRecipeIds().length }} seleccionadas</span>
+    </div>
+    <div class="recipe-options" *ngIf="recipes().length > 0; else loadingRecipes">
+      <label class="recipe-option" *ngFor="let recipe of recipes()" [class.selected]="isSelected(recipe.id)">
+        <input type="checkbox" [checked]="isSelected(recipe.id)" (change)="toggleRecipe(recipe)" />
+        <span>
+          <strong>{{ recipe.name }}</strong>
+          <small>{{ recipe.ingredients.length }} ingredientes</small>
+        </span>
+      </label>
+    </div>
+    <ng-template #loadingRecipes><p class="empty-state">Cargando recetas...</p></ng-template>
+  </section>
+
+  <section class="shopping-result" aria-labelledby="shopping-result-title">
+    <div class="section-heading">
+      <h2 id="shopping-result-title">Ingredientes necesarios</h2>
+      <span>{{ shoppingItems().length }} elementos</span>
+    </div>
+    <p class="empty-state" *ngIf="selectedRecipeIds().length === 0">Selecciona al menos una receta para generar tu lista.</p>
+    <ul class="shopping-items" *ngIf="selectedRecipeIds().length > 0">
+      <li *ngFor="let item of shoppingItems()" [class.checked]="item.checked">
+        <label>
+          <input type="checkbox" [checked]="item.checked" (change)="toggleItem(item.label)" />
+          <span>{{ item.label }}</span>
+        </label>
+      </li>
+    </ul>
+    <p class="empty-state" *ngIf="selectedRecipeIds().length > 0 && shoppingItems().length === 0">Las recetas seleccionadas no tienen ingredientes.</p>
+  </section>
+</main>

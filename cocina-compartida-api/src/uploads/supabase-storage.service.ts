@@ -27,6 +27,21 @@ export class SupabaseStorageService {
     return this.getPublicUrl(relativePath);
   }
 
+  async uploadCookingExperienceImage(
+    file: Express.Multer.File,
+    userId: string,
+    recipeId: string,
+  ): Promise<string> {
+    const ext = extname(file.originalname);
+    const uniqueName = `${Date.now()}-${crypto.randomBytes(8).toString('hex')}${ext}`;
+    const safeUserId = this.safeSegment(userId);
+    const safeRecipeId = this.safeSegment(recipeId);
+    const relativePath = `experiences/${safeUserId}/${safeRecipeId}/${uniqueName}`;
+
+    await this.writeFile(relativePath, file.buffer);
+    return this.getPublicUrl(relativePath);
+  }
+
   async deleteFile(pathOrUrl: string): Promise<void> {
     try {
       const target = this.resolveSafePath(this.toRelativePath(pathOrUrl));

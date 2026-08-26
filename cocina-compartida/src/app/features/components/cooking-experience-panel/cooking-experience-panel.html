@@ -1,0 +1,131 @@
+<section class="journal-panel" aria-labelledby="journal-title">
+  <div class="journal-heading">
+    <div>
+      <span class="eyebrow">Diario culinario</span>
+      <h2 id="journal-title">Mi experiencia cocinando</h2>
+      <p>Guarda lo que aprendiste al preparar {{ recipeName }}.</p>
+    </div>
+    <a *ngIf="auth.isLoged()" routerLink="/cooking-journal" class="history-link"
+      >Ver todo mi diario</a
+    >
+  </div>
+
+  <div *ngIf="!auth.isLoged()" class="login-prompt">
+    <div>
+      <strong>Convierte cada preparación en aprendizaje.</strong>
+      <p>Inicia sesión para registrar fotografías, cambios y recomendaciones.</p>
+    </div>
+    <a routerLink="/login">Iniciar sesión</a>
+  </div>
+
+  <ng-container *ngIf="auth.isLoged()">
+    <form class="experience-form" (ngSubmit)="submit()">
+      <div class="rating-field">
+        <span class="field-label">¿Cómo quedó?</span>
+        <div class="stars" role="radiogroup" aria-label="Calificación del resultado">
+          <button
+            *ngFor="let value of ratingScale"
+            type="button"
+            class="star-button"
+            [class.selected]="value <= rating"
+            [attr.aria-checked]="rating === value"
+            [attr.aria-label]="value + ' de 5 estrellas'"
+            role="radio"
+            (click)="selectRating(value)"
+          >
+            ★
+          </button>
+        </div>
+        <span class="rating-copy">{{ rating ? rating + ' de 5' : 'Selecciona de 1 a 5' }}</span>
+      </div>
+
+      <div class="form-grid">
+        <label>
+          <span>Notas de la preparación</span>
+          <textarea
+            name="preparationNotes"
+            [(ngModel)]="preparationNotes"
+            maxlength="3000"
+            placeholder="¿Qué salió bien? ¿Cómo fue el proceso?"
+          ></textarea>
+        </label>
+        <label>
+          <span>Cambios en ingredientes o cantidades</span>
+          <textarea
+            name="ingredientChanges"
+            [(ngModel)]="ingredientChanges"
+            maxlength="3000"
+            placeholder="Ejemplo: usé 20 g menos de azúcar y agregué canela."
+          ></textarea>
+        </label>
+        <label>
+          <span>Para la próxima vez</span>
+          <textarea
+            name="recommendations"
+            [(ngModel)]="recommendations"
+            maxlength="3000"
+            placeholder="Temperatura, tiempos o ideas que quieras recordar."
+          ></textarea>
+        </label>
+        <label class="photo-field">
+          <span>Fotografía del resultado</span>
+          <input
+            #photoInput
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            (change)="onPhotoSelected($event)"
+          />
+          <small>JPEG, PNG, WebP o GIF. Máximo 5 MB.</small>
+          <span *ngIf="fileError" class="field-error">{{ fileError }}</span>
+        </label>
+      </div>
+
+      <img
+        *ngIf="photoPreview"
+        [src]="photoPreview"
+        alt="Vista previa del resultado"
+        class="photo-preview"
+      />
+
+      <button class="save-button" type="submit" [disabled]="isSaving">
+        {{ isSaving ? 'Guardando...' : 'Guardar experiencia' }}
+      </button>
+    </form>
+
+    <div class="recipe-history">
+      <h3>Mis preparaciones de esta receta</h3>
+      <p *ngIf="isLoading" class="empty-state">Cargando historial...</p>
+      <p *ngIf="!isLoading && experiences.length === 0" class="empty-state">
+        Aún no has registrado una preparación. Esta puede ser la primera.
+      </p>
+
+      <article *ngFor="let experience of experiences" class="experience-card">
+        <img
+          *ngIf="experience.photoUrl"
+          [src]="experience.photoUrl"
+          alt="Resultado de la preparación"
+        />
+        <div class="experience-content">
+          <div class="experience-meta">
+            <span class="card-stars" [attr.aria-label]="experience.rating + ' de 5 estrellas'">
+              <span *ngFor="let value of ratingScale" [class.muted]="value > experience.rating"
+                >★</span
+              >
+            </span>
+            <time>{{ experience.createdAt | date: 'd MMM y, h:mm a' }}</time>
+          </div>
+          <p *ngIf="experience.preparationNotes">
+            <strong>Notas:</strong> {{ experience.preparationNotes }}
+          </p>
+          <p *ngIf="experience.ingredientChanges">
+            <strong>Cambios:</strong> {{ experience.ingredientChanges }}
+          </p>
+          <p *ngIf="experience.recommendations">
+            <strong>Próxima vez:</strong> {{ experience.recommendations }}
+          </p>
+          <button type="button" class="delete-button" (click)="remove(experience)">Eliminar</button>
+        </div>
+      </article>
+    </div>
+  </ng-container>
+</section>

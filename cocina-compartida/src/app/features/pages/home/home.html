@@ -1,65 +1,117 @@
-<main class="hero-section">
-  <h1 class="hero-title">
-    Descubre, comparte y disfruta de la cocina.
-  </h1>
-  <p class="hero-subtitle">
-    Únete a miles de foodies y comparte tus creaciones culinarias.
-  </p>
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="hero-badge-icon">🍳</span>
+      <span>La comunidad gastronómica #1</span>
+    </div>
 
-  <div class="hero-actions">
-    <a routerLink="/explore" class="primary-btn">Explorar Recetas</a>
-    <button (click)="checkAuthAndNavigate()" class="secondary-btn">Crear Receta</button>
+    <h1 class="hero-title">
+      Descubre, comparte y disfruta del <span class="gradient-text">arte de cocinar</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      Únete a miles de foodies y chefs. Encuentra inspiración culinaria y comparte tus mejores recetas con el mundo.
+    </p>
+
+    <div class="hero-actions">
+      <a routerLink="/explore" class="primary-btn">
+        <i class="fas fa-compass"></i>
+        <span>Explorar Recetas</span>
+      </a>
+      <button (click)="checkAuthAndNavigate()" class="secondary-btn">
+        <i class="fas fa-plus-circle"></i>
+        <span>Crear Receta</span>
+      </button>
+    </div>
+
+    <!-- Feature Highlights Pills -->
+    <div class="hero-features">
+      <div class="feature-item">
+        <i class="fas fa-utensils"></i>
+        <span>Recetas Únicas</span>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-heart"></i>
+        <span>100% Gratis</span>
+      </div>
+      <div class="feature-item">
+        <i class="fas fa-robot"></i>
+        <span>Chef Asistente IA</span>
+      </div>
+    </div>
   </div>
-</main>
+</section>
 
+<!-- Featured Recipes Section -->
 <div class="explore-container">
-  <h1>Recetas Destacadas</h1>
+  <div class="section-header">
+    <div class="section-badge">Lo más popular</div>
+    <h2 class="section-title">Recetas Destacadas</h2>
+    <p class="section-subtitle">Las creaciones mejor valoradas por nuestra comunidad gastronómica</p>
+  </div>
 
   <div *ngIf="featuredRecipes.length === 0" class="no-recipes">
-    <p>Aún no se han cargado recetas. ¡Sube la primera!</p>
+    <div class="no-recipes-icon">🥗</div>
+    <p>Aún no se han cargado recetas. ¡Sé el primero en inspirarnos!</p>
+    <button (click)="checkAuthAndNavigate()" class="primary-btn">Subir Primera Receta</button>
   </div>
 
-  <div class="recipe-list" *ngIf="featuredRecipes.length > 0">
+  <div class="recipe-grid" *ngIf="featuredRecipes.length > 0">
     <div class="recipe-card" *ngFor="let recipe of featuredRecipes; trackBy: trackByRecipeId"> 
 
-      <div class="recipe-image">
-        <img *ngIf="recipe.images.length > 0; else noImage" [src]="recipe.images[0]" alt="Foto de {{ recipe.name }}">
+      <!-- Image Area -->
+      <div class="recipe-image-wrapper">
+        <img *ngIf="recipe.images.length > 0; else noImage" [src]="recipe.images[0]" [alt]="'Foto de ' + recipe.name" class="recipe-img" loading="lazy">
         <ng-template #noImage>
           <div class="placeholder-image">
-            <span>Sin Imagen</span>
+            <i class="fas fa-camera"></i>
+            <span>Sin Foto</span>
           </div>
         </ng-template>
+
+        <!-- Category Badge -->
+        <span class="recipe-category-badge" *ngIf="recipe.category">
+          {{ recipe.category }}
+        </span>
+
+        <!-- Like Button Overlay -->
+        <button class="like-button" [class.liked]="hasLiked(recipe)" (click)="toggleLike(recipe)" aria-label="Dar me gusta">
+          <i class="fa fa-heart"></i>
+          <span>{{ recipe.likes || 0 }}</span>
+        </button>
       </div>
 
+      <!-- Info Area -->
       <div class="recipe-info">
-        <h2>{{ recipe.name }}</h2>
+        <h3 class="recipe-title" [routerLink]="['/recipe', recipe.id]">{{ recipe.name }}</h3>
         <p class="recipe-description">{{ recipe.descripcion }}</p>
 
-        <div class="author-info">
-          <img
-            [src]="recipe.user.avatar ?? '/assets/placeholder-avatar.png'"
-            [alt]="'Avatar de ' + (recipe.user.username )"
-            class="avatar clickable"
-            [routerLink]="['/profile', recipe.user.id]"
-          />
-          <span class="author-name clickable" [routerLink]="['/profile', recipe.user.id]">Creado por {{ recipe.user.username  }}</span>
-        </div>
+        <div class="recipe-footer-meta">
+          <div class="author-info" [routerLink]="['/profile', recipe.user.id]">
+            <img
+              [src]="recipe.user.avatar || 'assets/placeholder-avatar.png'"
+              [alt]="'Avatar de ' + recipe.user.username"
+              class="avatar clickable"
+            />
+            <span class="author-name clickable">{{ recipe.user.username }}</span>
+          </div>
 
-        <div class="recipe-actions">
-          <button class="like-button" (click)="toggleLike(recipe)">
-            <i class="fa fa-heart"></i> {{ recipe.likes || 0 }}
+          <button [routerLink]="['/recipe', recipe.id]" class="view-button">
+            <span>Ver Receta</span>
+            <i class="fas fa-arrow-right"></i>
           </button>
-          <button [routerLink]="['/recipe', recipe.id]" class="view-button">Ver Receta</button>
         </div>
       </div>
 
     </div>
   </div>
   
-  <!-- Botón "Ver más" que redirige a /explore -->
+  <!-- See More Button -->
   <div *ngIf="featuredRecipes.length > 0" class="see-more-container">
     <button (click)="navigateToExplore()" class="see-more-btn">
-      Ver Más Recetas
+      <span>Ver Más Recetas</span>
+      <i class="fas fa-arrow-right"></i>
     </button>
   </div>
 

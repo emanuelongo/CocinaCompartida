@@ -4,6 +4,7 @@ import { RecipesModule } from '../recipes/recipes.module';
 import { UserModule } from '../user/user.module';
 import { UploadsModule } from '../uploads/uploads.module';
 import { SeederModule } from '../seeder/seeder.module';
+import { CookingJournalModule } from '../cooking-journal/cooking-journal.module';
 import { CreateAuthDto } from '../auth/dto/create-auth.dto';
 import { UpdateAuthDto } from '../auth/dto/update-auth.dto';
 import { Auth } from '../auth/entities/auth.entity';
@@ -11,7 +12,15 @@ import { Auth } from '../auth/entities/auth.entity';
 describe('Modules and DTOs', () => {
   it('Modules_CuandoSeImportan_DebenEstarDefinidos', () => {
     // Arrange
-    const modules = [AppModule, AuthModule, RecipesModule, UserModule, UploadsModule, SeederModule];
+    const modules = [
+      AppModule,
+      AuthModule,
+      RecipesModule,
+      UserModule,
+      UploadsModule,
+      SeederModule,
+      CookingJournalModule,
+    ];
 
     // Act
     const result = modules.every((m) => m !== undefined);
