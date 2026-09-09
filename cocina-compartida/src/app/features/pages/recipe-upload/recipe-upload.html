@@ -37,6 +37,53 @@
     </div>
   </div>
 
+  <!-- Dificultad -->
+  <div class="form-group">
+    <label for="recipeDificultad">Dificultad:</label>
+    <div class="difficulty-selector" id="recipeDificultad">
+      <label
+        class="difficulty-option"
+        [class.selected]="recipeForm.get('dificultad')?.value === 'facil'"
+      >
+        <input type="radio" formControlName="dificultad" value="facil" />
+        <span class="difficulty-icon">🟢</span>
+        <span>Fácil</span>
+      </label>
+      <label
+        class="difficulty-option"
+        [class.selected]="recipeForm.get('dificultad')?.value === 'media'"
+      >
+        <input type="radio" formControlName="dificultad" value="media" />
+        <span class="difficulty-icon">🟡</span>
+        <span>Media</span>
+      </label>
+      <label
+        class="difficulty-option"
+        [class.selected]="recipeForm.get('dificultad')?.value === 'dificil'"
+      >
+        <input type="radio" formControlName="dificultad" value="dificil" />
+        <span class="difficulty-icon">🔴</span>
+        <span>Difícil</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Tiempo de preparación -->
+  <div class="form-group">
+    <label for="recipeTime">Tiempo de preparación:</label>
+    <div class="time-input-wrapper">
+      <input
+        type="number"
+        id="recipeTime"
+        formControlName="tiempoPreparacion"
+        placeholder="Ej. 45"
+        min="1"
+      />
+      <span class="time-unit-label">minutos</span>
+    </div>
+    <small>Opcional – tiempo total aproximado incluyendo preparación y cocción.</small>
+  </div>
+
   <!-- Descripción -->
   <div class="form-group">
     <label for="recipeDescription">Descripción:</label>

@@ -2,10 +2,10 @@
     --color-primary: #000;
     --color-secondary: #fff;
     --color-light-gray: #f0f0f0;
-    --color-text-gray: #6e6e6e; /* Gris para el subtítulo y enlaces inactivos */
+    --color-text-gray: #6e6e6e;
 }
 
-/* Base (pueden ir en estilos globales) */
+/* Base */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background-color: var(--color-secondary);
@@ -16,13 +16,13 @@ body {
 }
 
 /* ==================================== */
-/* 1. HEADER (Barra de Navegación) */
+/* 1. HEADER - UN SOLO RENGLÓN         */
 /* ==================================== */
 .main-header {
     width: 100%;
-    padding: 10px 0;
+    padding: 0;
     box-sizing: border-box;
-    position: sticky; 
+    position: sticky;
     top: 0;
     background-color: var(--color-secondary);
     z-index: 100;
@@ -31,33 +31,41 @@ body {
 
 .header-content {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    width: 100%; /* Ocupa toda la pantalla */
+    width: 100%;
     box-sizing: border-box;
-    margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 1.5rem;
+    height: 52px;
+    gap: 12px;
+    flex-wrap: nowrap;
+    /* NO overflow:hidden aquí – recortaría los dropdowns absolutos */
 }
 
 /* Logo */
 .logo {
-    font-weight: 600;
-    font-size: 16px;
+    font-weight: 700;
+    font-size: 15px;
     letter-spacing: -0.5px;
     cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
-/* Sección de Búsqueda y Filtros */
+/* ========================== */
+/* Barra de búsqueda compacta */
+/* ========================== */
 .search-section {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin: 0 2rem;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;         /* permite que flex reduzca */
 }
 
 .search-box {
     position: relative;
-    width: 300px;
+    width: 180px;
+    flex-shrink: 0;
 }
 
 .search-box.suggestions-open .search-input {
@@ -65,15 +73,17 @@ body {
     box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 
-/* Tamaño y forma ovalada idénticos para todos */
-.search-input, .category-select, .sort-options select, .action-btn, .logout-btn {
-    height: 38px;
-    border-radius: 20px;
-    font-size: 0.9rem;
+/* Altura base para todos los controles del header */
+.search-input,
+.category-select,
+.sort-options select,
+.action-btn,
+.logout-btn,
+.dropdown-header {
+    height: 34px;
+    border-radius: 17px;
+    font-size: 0.82rem;
     box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     outline: none;
     font-family: inherit;
     border: 1px solid #ddd;
@@ -81,8 +91,9 @@ body {
 
 .search-input {
     width: 100%;
-    padding: 0 2.5rem 0 1rem;
+    padding: 0 2.2rem 0 0.9rem;
     transition: border-color 0.3s, box-shadow 0.3s;
+    display: block;
 }
 
 .search-input:focus {
@@ -92,16 +103,17 @@ body {
 
 .search-icon {
     position: absolute;
-    right: 1rem;
+    right: 0.7rem;
     top: 50%;
     transform: translateY(-50%);
     color: #666;
     cursor: pointer;
-    padding: 4px;
+    padding: 3px;
     border-radius: 50%;
     transition: all 0.3s ease;
     background: none;
     border: none;
+    font-size: 0.8rem;
 }
 
 .search-icon:hover {
@@ -109,8 +121,19 @@ body {
     color: #007bff;
 }
 
-.sort-options select, .category-select {
-    padding: 0 2rem 0 1rem;
+/* ============================ */
+/* Sort + Custom Dropdowns row  */
+/* ============================ */
+.sort-options {
+    display: flex;
+    gap: 6px;
+    flex-wrap: nowrap;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.sort-options select {
+    padding: 0 1.6rem 0 0.8rem;
     cursor: pointer;
     background-color: white;
     color: #333;
@@ -118,21 +141,96 @@ body {
     -webkit-appearance: none;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
     background-repeat: no-repeat;
-    background-position: right 0.7rem center;
-    background-size: 1rem;
+    background-position: right 0.5rem center;
+    background-size: 0.85rem;
     transition: all 0.3s ease;
 }
 
-.sort-options select:hover, .category-select:hover {
+.sort-options select:hover {
     border-color: #3498db;
 }
 
-.sort-options select:focus, .category-select:focus {
-    border-color: #3498db;
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+/* ============================= */
+/* Custom dropdowns (checkboxes) */
+/* ============================= */
+.custom-dropdown {
+    position: relative;
+    flex-shrink: 0;
 }
 
-/* Dropdown de Sugerencias */
+.dropdown-header {
+    padding: 0 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: #333;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    background-color: white;
+    user-select: none;
+}
+
+/* Si tiene filtros activos se resalta */
+.dropdown-header.active-filter {
+    border-color: #007bff;
+    background-color: #eff6ff;
+    color: #1d4ed8;
+}
+
+.dropdown-header i.fa-chevron-down {
+    font-size: 0.65rem;
+    transition: transform 0.2s;
+}
+
+.dropdown-header:hover {
+    border-color: #3498db;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 6px;
+    min-width: 160px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    z-index: 99999;  /* Por encima de todo */
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background-color 0.15s;
+    white-space: nowrap;
+    font-size: 0.85rem;
+    color: #374151;
+}
+
+.dropdown-item:hover {
+    background-color: #f3f4f6;
+}
+
+.dropdown-item input[type="checkbox"] {
+    accent-color: #007bff;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* =================== */
+/* Suggestions dropdown */
+/* =================== */
 .suggestions-dropdown {
     position: absolute;
     top: 100%;
@@ -148,7 +246,7 @@ body {
 }
 
 .suggestion-item {
-    padding: 12px 15px;
+    padding: 10px 14px;
     cursor: pointer;
     border-bottom: 1px solid #f5f5f5;
     transition: background-color 0.2s ease;
@@ -167,39 +265,44 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .suggestion-content strong {
     font-weight: 600;
     color: #333;
+    font-size: 0.9rem;
 }
 
 .suggestion-category {
-    font-size: 12px;
+    font-size: 11px;
     color: #666;
     background: #e9ecef;
-    padding: 2px 8px;
+    padding: 2px 7px;
     border-radius: 10px;
     text-transform: capitalize;
 }
 
 .suggestion-author {
     color: #888;
-    font-size: 13px;
+    font-size: 12px;
 }
 
-/* Navegación (Explorar y Categorías) */
+/* ========================== */
+/* Navegación central         */
+/* ========================== */
 .main-nav {
     display: flex;
-    gap: 25px;
+    gap: 18px;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .nav-link {
     text-decoration: none;
-    color: var(--color-text-gray); /* Enlaces grisáceos */
-    font-size: 15px;
+    color: var(--color-text-gray);
+    font-size: 14px;
+    white-space: nowrap;
     transition: color 0.2s;
 }
 
@@ -209,23 +312,46 @@ body {
 
 .categories-menu {
     position: relative;
-    margin: 0 1rem;
 }
 
-/* Sección de Autenticación */
+.category-select {
+    padding: 0 1.6rem 0 0.8rem;
+    cursor: pointer;
+    background-color: white;
+    color: #333;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.category-select:hover {
+    border-color: #3498db;
+}
+
+/* ========================== */
+/* Sección autenticación      */
+/* ========================== */
 .auth-section {
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .action-btn {
     text-decoration: none;
     background-color: var(--color-primary);
     color: var(--color-secondary);
-    padding: 0 20px;
+    padding: 0 16px;
     font-weight: 500;
     transition: background-color 0.2s;
     border: none;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
 }
 
 .action-btn:hover {
@@ -235,9 +361,11 @@ body {
 .create-recipe-link {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     font-weight: 600;
+    font-size: 13px;
     color: #27ae60;
+    white-space: nowrap;
     transition: all 0.2s ease;
 }
 
@@ -249,16 +377,16 @@ body {
 .user-menu {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
 }
 
 .user-profile-header {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 7px;
     text-decoration: none;
     cursor: pointer;
-    padding: 4px 8px;
+    padding: 3px 8px;
     border-radius: 20px;
     transition: background-color 0.2s ease;
 }
@@ -268,8 +396,8 @@ body {
 }
 
 .header-user-avatar {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #e2e8f0;
@@ -280,7 +408,7 @@ body {
 .welcome-text {
     color: #2c3e50;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     white-space: nowrap;
 }
 
@@ -288,10 +416,11 @@ body {
     background: #c4303d;
     color: white;
     border: none;
-    padding: 0 16px;
+    padding: 0 14px;
     font-weight: 500;
     cursor: pointer;
     transition: background 0.3s ease;
+    white-space: nowrap;
 }
 
 .logout-btn:hover {
@@ -299,7 +428,7 @@ body {
 }
 
 /* ==================================== */
-/* 2. SECCIÓN PRINCIPAL (Hero) */
+/* 2. HERO SECTION                      */
 /* ==================================== */
 .hero-section {
     display: flex;
@@ -329,14 +458,12 @@ body {
     color: var(--color-text-gray);
 }
 
-/* Contenedor de Botones */
 .hero-actions {
     display: flex;
     gap: 15px;
     justify-content: center;
 }
 
-/* Botones de Acción */
 .primary-btn, .secondary-btn {
     text-decoration: none;
     padding: 15px 30px;
@@ -346,7 +473,6 @@ body {
     transition: all 0.2s;
 }
 
-/* Botón Principal: "Explorar Recetas" */
 .primary-btn {
     background-color: var(--color-primary);
     color: var(--color-secondary);
@@ -358,7 +484,6 @@ body {
     border-color: #333;
 }
 
-/* Botón Secundario: "Crear Cuenta" */
 .secondary-btn {
     background-color: var(--color-secondary);
     color: var(--color-primary);

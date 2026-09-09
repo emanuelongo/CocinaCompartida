@@ -38,6 +38,8 @@ export class RecipeFormService {
         [Validators.required, Validators.minLength(10), RecipeFormService.meaningfulText],
       ],
       category: ['', [Validators.required]],
+      dificultad: ['media', [Validators.required]],
+      tiempoPreparacion: [null],
       servings: [
         2,
         [Validators.required, Validators.min(1), Validators.max(100), Validators.pattern(/^\d+$/)],
@@ -125,6 +127,8 @@ export class RecipeFormService {
       name: form.value.name.trim(),
       descripcion: form.value.descripcion.trim(),
       category: form.value.category,
+      dificultad: form.value.dificultad || 'media',
+      tiempoPreparacion: form.value.tiempoPreparacion ? Number(form.value.tiempoPreparacion) : null,
       servings: Number(form.value.servings),
       ingredients: filteredIngredients,
       steps: filteredSteps,

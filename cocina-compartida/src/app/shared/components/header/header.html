@@ -32,6 +32,105 @@
                     <option value="oldest">Más antiguas</option>
                     <option value="likes">Más likes</option>
                 </select>
+
+                <!-- Custom Dropdown: Dificultad -->
+                <div class="custom-dropdown" (click)="toggleMenu('dificultad')">
+                    <div class="dropdown-header" [class.active-filter]="searchService.currentDificultad().length > 0">
+                        <i class="fas fa-signal" style="font-size:0.75rem"></i>
+                        Dificultad
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="dropdown-menu" *ngIf="dificultadMenuOpen" (click)="$event.stopPropagation()">
+                        <label class="dropdown-item">
+                            <input type="checkbox" 
+                                   [checked]="searchService.currentDificultad().length === 0" 
+                                   (change)="toggleDificultad('todas')">
+                            Todas
+                        </label>
+                        <label class="dropdown-item">
+                            <input type="checkbox" 
+                                   [checked]="searchService.currentDificultad().includes('facil')" 
+                                   (change)="toggleDificultad('facil')">
+                            Fácil
+                        </label>
+                        <label class="dropdown-item">
+                            <input type="checkbox" 
+                                   [checked]="searchService.currentDificultad().includes('media')" 
+                                   (change)="toggleDificultad('media')">
+                            Media
+                        </label>
+                        <label class="dropdown-item">
+                            <input type="checkbox" 
+                                   [checked]="searchService.currentDificultad().includes('dificil')" 
+                                   (change)="toggleDificultad('dificil')">
+                            Difícil
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Custom Dropdown: Ingredientes -->
+                <div class="custom-dropdown" (click)="toggleMenu('ingredientes')">
+                    <div class="dropdown-header" [class.active-filter]="searchService.currentIngredientFilter().length > 0">
+                        <i class="fas fa-list" style="font-size:0.75rem"></i>
+                        Ingredientes
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="dropdown-menu" *ngIf="ingredientesMenuOpen" (click)="$event.stopPropagation()">
+                        <label class="dropdown-item">
+                            <input type="checkbox" 
+                                   [checked]="searchService.currentIngredientFilter().length === 0" 
+                                   (change)="toggleIngredient('todas')">
+                            Todos
+                        </label>
+                        <label class="dropdown-item">
+                            <input type="checkbox" 
+                                   [checked]="searchService.currentIngredientFilter().includes('menos5')" 
+                                   (change)="toggleIngredient('menos5')">
+                            Menos de 5
+                        </label>
+                        <label class="dropdown-item">
+                            <input type="checkbox" 
+                                   [checked]="searchService.currentIngredientFilter().includes('mas5')" 
+                                   (change)="toggleIngredient('mas5')">
+                            5 o más
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Custom Dropdown: Tiempo -->
+                <div class="custom-dropdown" (click)="toggleMenu('tiempo')">
+                    <div class="dropdown-header" [class.active-filter]="searchService.currentTimeFilter().length > 0">
+                        <i class="fas fa-clock" style="font-size:0.75rem"></i>
+                        Tiempo
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="dropdown-menu" *ngIf="tiempoMenuOpen" (click)="$event.stopPropagation()">
+                        <label class="dropdown-item">
+                            <input type="checkbox" 
+                                   [checked]="searchService.currentTimeFilter().length === 0" 
+                                   (change)="toggleTime('todas')">
+                            Cualquiera
+                        </label>
+                        <label class="dropdown-item">
+                            <input type="checkbox" 
+                                   [checked]="searchService.currentTimeFilter().includes('rapido')" 
+                                   (change)="toggleTime('rapido')">
+                            Rápido (&lt;30m)
+                        </label>
+                        <label class="dropdown-item">
+                            <input type="checkbox" 
+                                   [checked]="searchService.currentTimeFilter().includes('medio')" 
+                                   (change)="toggleTime('medio')">
+                            Medio (30-60m)
+                        </label>
+                        <label class="dropdown-item">
+                            <input type="checkbox" 
+                                   [checked]="searchService.currentTimeFilter().includes('largo')" 
+                                   (change)="toggleTime('largo')">
+                            Largo (&gt;60m)
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
 

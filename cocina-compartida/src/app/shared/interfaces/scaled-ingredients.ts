@@ -5,6 +5,8 @@ export interface ScaledIngredient {
   adjustedQuantity?: number;
   unit?: string;
   scalable: boolean;
+  importancia?: string;
+  reemplazo?: string;
 }
 
 export interface ScaledIngredientsResult {

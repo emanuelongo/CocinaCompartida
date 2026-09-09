@@ -7,6 +7,7 @@ import {
   IsInt,
   Min,
   Max,
+  IsIn,
 } from 'class-validator';
 
 export class CreateRecipeDto {
@@ -39,4 +40,14 @@ export class CreateRecipeDto {
   @IsString()
   @IsOptional()
   category?: string;
+
+  @IsString()
+  @IsOptional()
+  @IsIn(['facil', 'media', 'dificil'])
+  dificultad?: string;
+
+  @IsInt()
+  @IsOptional()
+  @Min(1)
+  tiempoPreparacion?: number;
 }

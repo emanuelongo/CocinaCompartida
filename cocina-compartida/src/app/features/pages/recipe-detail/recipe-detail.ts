@@ -30,6 +30,14 @@ export class RecipeDetail implements OnInit {
   authService = inject(Auth);
   private router = inject(Router);
 
+  getDificultadLabel(dificultad?: string): string {
+    switch (dificultad) {
+      case 'facil': return 'Fácil';
+      case 'dificil': return 'Difícil';
+      default: return 'Media';
+    }
+  }
+
   ngOnInit(): void {
     this.loadRecipe();
   }

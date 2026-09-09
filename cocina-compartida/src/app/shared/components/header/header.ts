@@ -120,14 +120,79 @@ export class Header {
     }, 150);
   }
 
-  onCategoryChange(categoryId: string) {
-    this.selectedCategory = categoryId;
-    this.searchService.filterByCategory(categoryId);
+  onSortChange() {
+    this.searchService.setSortOption(this.sortOption);
     this.router.navigate(['/explore']);
   }
 
-  onSortChange() {
-    this.searchService.setSortOption(this.sortOption);
+  // Estados de los dropdowns custom
+  dificultadMenuOpen = false;
+  ingredientesMenuOpen = false;
+  tiempoMenuOpen = false;
+
+  toggleMenu(menu: 'dificultad' | 'ingredientes' | 'tiempo') {
+    if (menu === 'dificultad') {
+      this.dificultadMenuOpen = !this.dificultadMenuOpen;
+      this.ingredientesMenuOpen = false;
+      this.tiempoMenuOpen = false;
+    } else if (menu === 'ingredientes') {
+      this.ingredientesMenuOpen = !this.ingredientesMenuOpen;
+      this.dificultadMenuOpen = false;
+      this.tiempoMenuOpen = false;
+    } else if (menu === 'tiempo') {
+      this.tiempoMenuOpen = !this.tiempoMenuOpen;
+      this.dificultadMenuOpen = false;
+      this.ingredientesMenuOpen = false;
+    }
+  }
+
+  toggleDificultad(val: string) {
+    let current = [...this.searchService.currentDificultad()];
+    if (val === 'todas') {
+      current = [];
+    } else {
+      if (current.includes(val)) {
+        current = current.filter(d => d !== val);
+      } else {
+        current.push(val);
+      }
+    }
+    this.searchService.filterByDificultad(current);
+    this.router.navigate(['/explore']);
+  }
+
+  toggleIngredient(val: string) {
+    let current = [...this.searchService.currentIngredientFilter()];
+    if (val === 'todas') {
+      current = [];
+    } else {
+      if (current.includes(val as any)) {
+        current = current.filter(d => d !== val);
+      } else {
+        current.push(val as any);
+      }
+    }
+    this.searchService.filterByIngredientCount(current);
+    this.router.navigate(['/explore']);
+  }
+
+  toggleTime(val: string) {
+    let current = [...this.searchService.currentTimeFilter()];
+    if (val === 'todas') {
+      current = [];
+    } else {
+      if (current.includes(val as any)) {
+        current = current.filter(d => d !== val);
+      } else {
+        current.push(val as any);
+      }
+    }
+    this.searchService.filterByTime(current);
+    this.router.navigate(['/explore']);
+  }
+
+  onCategoryChange(categoryId: string) {
+    this.searchService.filterByCategory(categoryId);
     this.router.navigate(['/explore']);
   }
 }

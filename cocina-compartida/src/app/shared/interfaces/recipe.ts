@@ -19,7 +19,9 @@ export interface Recipe {
     username: string;
     avatar?: string;
   };
-  category: string; // Nueva propiedad para la categoría
+  category: string;
+  dificultad?: 'facil' | 'media' | 'dificil';
+  tiempoPreparacion?: number; // en minutos
   likes?: number;
   likedBy?: string[]; // Array de IDs de usuarios a los que les gusta
   comments?: Comment[];

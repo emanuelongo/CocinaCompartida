@@ -301,3 +301,138 @@ h1 {
     padding: 1.5rem;
   }
 }
+
+/* === FILTROS AVANZADOS === */
+
+.filters-panel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.filters-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 6px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.chip.active {
+  background: #0f172a;
+  border-color: #0f172a;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.chip-facil.active { background: #16a34a; border-color: #16a34a; }
+.chip-media.active { background: #ca8a04; border-color: #ca8a04; }
+.chip-dificil.active { background: #dc2626; border-color: #dc2626; }
+.chip-time.active { background: #2563eb; border-color: #2563eb; }
+
+.filter-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.results-count {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* === BADGES sobre imagen === */
+
+.recipe-image {
+  position: relative;
+}
+
+.recipe-badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.badge-difficulty, .badge-time {
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: white;
+  backdrop-filter: blur(6px);
+  display: inline-block;
+}
+
+.badge-facil { background: rgba(22, 163, 74, 0.85); }
+.badge-media { background: rgba(202, 138, 4, 0.85); }
+.badge-dificil { background: rgba(220, 38, 38, 0.85); }
+
+.badge-time {
+  background: rgba(15, 23, 42, 0.75);
+}
+
+/* === Meta info de ingredientes === */
+
+.recipe-meta-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.meta-item {
+  font-size: 0.82rem;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 3px 10px;
+  border-radius: 10px;
+}

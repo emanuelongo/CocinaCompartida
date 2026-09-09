@@ -1,20 +1,19 @@
 <div class="explore-container">
   <h1>Explora las Recetas</h1>
 
-  <div *ngIf="allRecipes().length === 0 && !searchService.currentQuery()" class="no-recipes">
+
+
+  <!-- Sin recetas -->
+  <div *ngIf="allRecipes().length === 0 && !searchService.hasActiveFilters()" class="no-recipes">
     <p>Aún no se han cargado recetas. ¡Sube la primera!</p>
   </div>
 
-  <div *ngIf="allRecipes().length === 0 && (searchService.currentQuery() || searchService.currentCategory() !== 'todas')" class="no-results">
-    <p>No se encontraron recetas que coincidan con los filtros aplicados</p>
+  <div *ngIf="allRecipes().length === 0 && searchService.hasActiveFilters()" class="no-results">
+    <p>No se encontraron recetas con los filtros aplicados</p>
     <button class="clear-search" (click)="clearSearch()">Limpiar filtros</button>
   </div>
 
-  <div *ngIf="allRecipes().length === 0 && searchService.currentQuery() && searchService.suggestions().length === 0" class="no-results">
-    <p>La receta "{{ searchService.currentQuery() }}" no ha sido encontrada</p>
-    <button class="clear-search" (click)="clearSearch()">Buscar otra receta</button>
-  </div>
-
+  <!-- Lista de recetas -->
   <div class="recipe-list" *ngIf="allRecipes().length > 0">
     <div class="recipe-card" *ngFor="let recipe of recipesToShow(); trackBy: trackByRecipeId">
       <div class="recipe-image">
@@ -24,21 +23,41 @@
             <span>Sin Imagen</span>
           </div>
         </ng-template>
+        <!-- Badges de dificultad y tiempo sobre la imagen -->
+        <div class="recipe-badges">
+          <span
+            class="badge-difficulty"
+            [class.badge-facil]="(recipe.dificultad ?? 'media') === 'facil'"
+            [class.badge-media]="(recipe.dificultad ?? 'media') === 'media'"
+            [class.badge-dificil]="(recipe.dificultad ?? 'media') === 'dificil'"
+          >
+            {{ getDificultadLabel(recipe.dificultad) }}
+          </span>
+          <span *ngIf="recipe.tiempoPreparacion" class="badge-time">
+            ⏱ {{ recipe.tiempoPreparacion }} min
+          </span>
+        </div>
       </div>
       <div class="recipe-info">
         <h2>{{ recipe.name }}</h2>
         <p class="recipe-description">{{ recipe.descripcion }}</p>
-        
+
+        <div class="recipe-meta-row">
+          <span class="meta-item">
+            🥗 {{ recipe.ingredients.length }} ingrediente(s)
+          </span>
+        </div>
+
         <div class="author-info">
           <img
-            [src]="recipe.user.avatar ?? 'assets/placeholder-avatar.png'"
-            [alt]="'Avatar de ' + (recipe.user.username )"
+            [src]="recipe.user.avatar ?? 'logos/default.webp'"
+            [alt]="'Avatar de ' + (recipe.user.username)"
             class="avatar clickable"
             [routerLink]="['/profile', recipe.user.id]"
           />
-          <span class="author-name clickable" [routerLink]="['/profile', recipe.user.id]">Creado por {{ recipe.user.username  }}</span>
+          <span class="author-name clickable" [routerLink]="['/profile', recipe.user.id]">Creado por {{ recipe.user.username }}</span>
         </div>
-        
+
         <div class="recipe-actions">
           <button (click)="toggleLike(recipe.id)" class="like-button" [class.liked]="hasLiked(recipe)">
             <i class="fa fa-heart"></i> {{ recipe.likes }}
@@ -59,4 +78,5 @@
       <p>¡Has llegado al final de las recetas! 🎉</p>
     </div>
   </div>
+
 </div>

@@ -14,7 +14,18 @@
   <div class="recipe-main-header">
     <h1>{{ recipe.name }}</h1>
     <p>{{ recipe.descripcion }}</p>
-    <div class="likes-summary"><i class="fa fa-heart"></i> {{ recipe.likes || 0 }} me gusta</div>
+    <div class="recipe-meta-detail">
+      <span class="meta-badge difficulty-badge" 
+            [ngClass]="'badge-' + (recipe.dificultad || 'media')">
+        {{ getDificultadLabel(recipe.dificultad) }}
+      </span>
+      <span class="meta-badge time-badge" *ngIf="recipe.tiempoPreparacion">
+        ⏱ {{ recipe.tiempoPreparacion }} min
+      </span>
+      <span class="meta-badge likes-summary">
+        <i class="fa fa-heart"></i> {{ recipe.likes || 0 }} me gusta
+      </span>
+    </div>
     <div class="owner-actions">
       <div *ngIf="canEdit()" class="admin-actions">
         <button (click)="goToEdit()">Editar receta</button>

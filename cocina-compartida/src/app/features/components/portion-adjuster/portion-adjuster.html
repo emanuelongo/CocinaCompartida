@@ -56,15 +56,24 @@
 
   <ul class="adjusted-ingredients" [class.loading]="isCalculating">
     <li *ngFor="let ingredient of displayedIngredients; let index = index" [class.checked]="checkedIngredients[index]">
-      <label class="ingredient-check">
-        <input
-          type="checkbox"
-          [(ngModel)]="checkedIngredients[index]"
-          [attr.aria-label]="'Marcar ' + ingredient.adjusted + ' como disponible'"
-        />
-        <span>{{ ingredient.adjusted }}</span>
-      </label>
-      <small *ngIf="!isOriginal && !ingredient.scalable">Se mantiene sin cambios</small>
+      <div class="ingredient-info">
+        <label class="ingredient-check">
+          <input
+            type="checkbox"
+            [(ngModel)]="checkedIngredients[index]"
+            [attr.aria-label]="'Marcar ' + ingredient.adjusted + ' como disponible'"
+          />
+          <span class="ingredient-name">{{ ingredient.adjusted }}</span>
+        </label>
+        <span class="ingredient-badge badge-opcional" *ngIf="ingredient.importancia === 'opcional'">Opcional</span>
+        <span class="ingredient-badge badge-reemplazable" *ngIf="ingredient.importancia === 'reemplazable'" [title]="'Reemplazo: ' + ingredient.reemplazo">
+          Reemplazable <i class="fa fa-info-circle"></i>
+        </span>
+      </div>
+      <div class="ingredient-replacement" *ngIf="ingredient.importancia === 'reemplazable' && ingredient.reemplazo">
+        <small>Se puede reemplazar por: {{ ingredient.reemplazo }}</small>
+      </div>
+      <small class="unscalable-note" *ngIf="!isOriginal && !ingredient.scalable">Se mantiene sin cambios</small>
     </li>
   </ul>
 

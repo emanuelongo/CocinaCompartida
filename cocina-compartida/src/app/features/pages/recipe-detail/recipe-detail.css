@@ -38,8 +38,35 @@
 .recipe-main-header p {
     font-size: 1.5em;
     color: #7f8c8d;
-    margin: 5px 0 0 0;
+    margin: 5px 0 15px 0;
 }
+
+.recipe-meta-detail {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.meta-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.badge-facil { background-color: #16a34a; }
+.badge-media { background-color: #ca8a04; }
+.badge-dificil { background-color: #dc2626; }
+.time-badge { background-color: #0f172a; }
+.likes-summary { background-color: #e11d48; color: #fff; }
 
 /* --- Estilos para Acciones del Propietario y Descarga --- */
 .owner-actions {
