@@ -23,9 +23,6 @@ export class Header {
   selectedCategory = 'todas';
   showSuggestions = signal(false);
   selectedSuggestionIndex = signal(-1);
-  isMobileMenuOpen = signal(false);
-  // Menú desplegable del usuario
-  userMenuOpen = signal(false);
 
   readonly categories = [
     { id: 'todas', name: 'Todas las recetas' },
@@ -36,30 +33,24 @@ export class Header {
     { id: 'guarniciones', name: 'Guarniciones' }
   ];
 
-  toggleMobileMenu() {
-    this.isMobileMenuOpen.update(open => !open);
-  }
-
-  closeMobileMenu() {
-    this.isMobileMenuOpen.set(false);
-  }
-
-  // Menú del usuario
-  toggleUserMenu() {
-    this.userMenuOpen.update(open => !open);
-  }
-
-  closeUserMenu() {
-    this.userMenuOpen.set(false);
-  }
-
   goToLogin() {
-    this.closeMobileMenu();
     this.router.navigate(['/login']);
   }
 
+  getAvatarUrl(avatar?: string | null): string {
+    if (!avatar) return 'logos/default.webp';
+    if (/^https?:\/\//i.test(avatar) || avatar.startsWith('data:')) return avatar;
+    return avatar.startsWith('/') ? avatar : `/${avatar}`;
+  }
+
+  onAvatarError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    if (target) {
+      target.src = 'logos/default.webp';
+    }
+  }
+
   onSearch() {
-    this.closeMobileMenu();
     this.showSuggestions.set(false);
     this.selectedSuggestionIndex.set(-1);
     this.searchService.search(this.searchQuery);
@@ -129,16 +120,79 @@ export class Header {
     }, 150);
   }
 
-  onCategoryChange(categoryId: string) {
-    this.closeMobileMenu();
-    this.selectedCategory = categoryId;
-    this.searchService.filterByCategory(categoryId);
+  onSortChange() {
+    this.searchService.setSortOption(this.sortOption);
     this.router.navigate(['/explore']);
   }
 
-  onSortChange() {
-    this.closeMobileMenu();
-    this.searchService.setSortOption(this.sortOption);
+  // Estados de los dropdowns custom
+  dificultadMenuOpen = false;
+  ingredientesMenuOpen = false;
+  tiempoMenuOpen = false;
+
+  toggleMenu(menu: 'dificultad' | 'ingredientes' | 'tiempo') {
+    if (menu === 'dificultad') {
+      this.dificultadMenuOpen = !this.dificultadMenuOpen;
+      this.ingredientesMenuOpen = false;
+      this.tiempoMenuOpen = false;
+    } else if (menu === 'ingredientes') {
+      this.ingredientesMenuOpen = !this.ingredientesMenuOpen;
+      this.dificultadMenuOpen = false;
+      this.tiempoMenuOpen = false;
+    } else if (menu === 'tiempo') {
+      this.tiempoMenuOpen = !this.tiempoMenuOpen;
+      this.dificultadMenuOpen = false;
+      this.ingredientesMenuOpen = false;
+    }
+  }
+
+  toggleDificultad(val: string) {
+    let current = [...this.searchService.currentDificultad()];
+    if (val === 'todas') {
+      current = [];
+    } else {
+      if (current.includes(val)) {
+        current = current.filter(d => d !== val);
+      } else {
+        current.push(val);
+      }
+    }
+    this.searchService.filterByDificultad(current);
+    this.router.navigate(['/explore']);
+  }
+
+  toggleIngredient(val: string) {
+    let current = [...this.searchService.currentIngredientFilter()];
+    if (val === 'todas') {
+      current = [];
+    } else {
+      if (current.includes(val as any)) {
+        current = current.filter(d => d !== val);
+      } else {
+        current.push(val as any);
+      }
+    }
+    this.searchService.filterByIngredientCount(current);
+    this.router.navigate(['/explore']);
+  }
+
+  toggleTime(val: string) {
+    let current = [...this.searchService.currentTimeFilter()];
+    if (val === 'todas') {
+      current = [];
+    } else {
+      if (current.includes(val as any)) {
+        current = current.filter(d => d !== val);
+      } else {
+        current.push(val as any);
+      }
+    }
+    this.searchService.filterByTime(current);
+    this.router.navigate(['/explore']);
+  }
+
+  onCategoryChange(categoryId: string) {
+    this.searchService.filterByCategory(categoryId);
     this.router.navigate(['/explore']);
   }
 }

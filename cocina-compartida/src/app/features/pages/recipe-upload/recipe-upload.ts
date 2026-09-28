@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
 import { RecipeUploadService } from '../../../shared/services/recipe-upload.service';
@@ -8,7 +9,7 @@ import { RecipeUploadService } from '../../../shared/services/recipe-upload.serv
 @Component({
   selector: 'app-recipe-upload',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './recipe-upload.html',
   styleUrls: ['./recipe-upload.css'],
   providers: [RecipeUploadService]
@@ -45,6 +46,10 @@ export class RecipeUpload implements OnInit {
     return this.recipeForm.get('steps') as FormArray;
   }
 
+  getIngredientGroup(index: number): FormGroup {
+    return this.ingredients.at(index) as FormGroup;
+  }
+
   constructor() {
     this.recipeForm = this.recipeUploadService.createRecipeForm();
   }
@@ -63,7 +68,7 @@ export class RecipeUpload implements OnInit {
   }
 
   addIngredient(): void {
-    this.recipeUploadService.addFormArrayItem(this.ingredients);
+    this.recipeUploadService.addFormArrayItem(this.ingredients, true);
   }
 
   removeIngredient(index: number): void {

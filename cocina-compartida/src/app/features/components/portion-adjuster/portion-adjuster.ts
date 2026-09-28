@@ -90,14 +90,43 @@ export class PortionAdjuster implements OnInit {
       if (currentRequest === this.requestVersion) this.isCalculating = false;
     }
   }
-
   private showOriginalIngredients(): void {
-    this.displayedIngredients = this.originalIngredients.map((ingredient) => ({
-      original: ingredient,
-      adjusted: ingredient,
-      scalable: false,
-    }));
+    this.displayedIngredients = (this.originalIngredients || []).map((ingredient) => {
+      const parsedInfo = this.extractIngredientInfo(ingredient);
+      return {
+        original: parsedInfo.nombre,
+        adjusted: parsedInfo.nombre,
+        scalable: false,
+        importancia: parsedInfo.importancia,
+        reemplazo: parsedInfo.reemplazo,
+      };
+    });
     this.checkedIngredients = this.displayedIngredients.map(() => false);
+  }
+
+  private extractIngredientInfo(ing: any): { nombre: string; importancia?: string; reemplazo?: string } {
+    if (!ing) return { nombre: '' };
+    if (typeof ing === 'string') {
+      try {
+        const parsed = JSON.parse(ing);
+        if (parsed && typeof parsed === 'object' && parsed.nombre) {
+          return {
+            nombre: parsed.nombre,
+            importancia: parsed.importancia,
+            reemplazo: parsed.reemplazo,
+          };
+        }
+      } catch {}
+      return { nombre: ing };
+    }
+    if (typeof ing === 'object' && ing.nombre) {
+      return {
+        nombre: ing.nombre,
+        importancia: ing.importancia,
+        reemplazo: ing.reemplazo,
+      };
+    }
+    return { nombre: String(ing) };
   }
 
   private normalizeServings(value: number): number {

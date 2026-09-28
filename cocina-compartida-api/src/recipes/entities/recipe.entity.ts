@@ -52,6 +52,12 @@ export class Recipe {
   @Column({ type: 'varchar', nullable: true, default: 'platos-fuertes' })
   category: string;
 
+  @Column({ type: 'varchar', nullable: true, default: 'media' })
+  dificultad: string; // 'facil' | 'media' | 'dificil'
+
+  @Column({ type: 'int', nullable: true, default: null })
+  tiempoPreparacion: number; // en minutos
+
   @Column({ type: 'int', default: 0 })
   likes: number;
 

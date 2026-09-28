@@ -1,135 +1,300 @@
-import { TestBed } from '@angular/core/testing';
-import { RecipeDetail } from './recipe-detail';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { RecipeService } from '../../../shared/services/recipe';
+import { Recipe } from '../../../shared/interfaces/recipe';
 import { Auth } from '../../../shared/services/auth';
-import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import Swal from 'sweetalert2';
-import { RecipeCrudService } from '../../../shared/services/recipe-crud.service';
-import { RecipeStateService } from '../../../shared/services/recipe-state.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { CookingExperiencePanel } from '../../components/cooking-experience-panel/cooking-experience-panel';
+import { PortionAdjuster } from '../../components/portion-adjuster/portion-adjuster';
 
-describe('Descargar PDF (Frontend Tests)', () => {
+@Component({
+  selector: 'app-recipe-detail',
+  standalone: true,
+  imports: [CommonModule, RouterLink, FormsModule, CookingExperiencePanel, PortionAdjuster],
+  templateUrl: './recipe-detail.html',
+  styleUrls: ['./recipe-detail.css'],
+})
+export class RecipeDetail implements OnInit {
+  // --- Propiedades de Estado ---
+  recipe: Recipe | undefined;
+  isLoading: boolean = true;
+  error: string | null = null;
 
-  describe('RecipeDetail Component', () => {
-    let component: RecipeDetail;
-    let mockRecipeService: any;
-    let mockAuth: any;
-    let mockActivatedRoute: any;
-    let mockRouter: any;
+  currentIndex: number = 0;
+  newComment: string = '';
 
-    beforeEach(() => {
-      mockRecipeService = {
-        getRecipeById: jasmine.createSpy('getRecipeById').and.returnValue(Promise.resolve({ id: 'r1' })),
-        downloadPDF: jasmine.createSpy('downloadPDF'),
-        downloadImage: jasmine.createSpy('downloadImage'),
-        deleteRecipe: jasmine.createSpy('deleteRecipe'),
-        addComment: jasmine.createSpy('addComment')
-      };
-      mockAuth = { 
-        isLoged: jasmine.createSpy('isLoged').and.returnValue(true),
-        getUserProfile: jasmine.createSpy('getUserProfile').and.returnValue({ id: 'u1' })
-      };
-      mockActivatedRoute = { snapshot: { paramMap: { get: () => 'r1' } } };
-      mockRouter = { navigate: jasmine.createSpy('navigate') };
+  private route = inject(ActivatedRoute);
+  private recipeService = inject(RecipeService);
+  authService = inject(Auth);
+  private router = inject(Router);
 
-      spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: true }) as any);
+  getDificultadLabel(dificultad?: string): string {
+    switch (dificultad) {
+      case 'facil': return 'Fácil';
+      case 'dificil': return 'Difícil';
+      default: return 'Media';
+    }
+  }
 
-      TestBed.configureTestingModule({
-        imports: [RecipeDetail],
-        providers: [
-          provideRouter([]),
-          { provide: RecipeService, useValue: mockRecipeService },
-          { provide: Auth, useValue: mockAuth },
-          { provide: ActivatedRoute, useValue: mockActivatedRoute },
-          { provide: Router, useValue: mockRouter }
-        ]
+  ngOnInit(): void {
+    this.loadRecipe();
+  }
+
+  private async loadRecipe(): Promise<void> {
+    this.isLoading = true;
+    this.error = null;
+
+    const recipeId = this.route.snapshot.paramMap.get('id');
+
+    if (!recipeId) {
+      this.isLoading = false;
+      this.error = 'Error de URL: No se encontró un ID de receta.';
+      this.router.navigate(['/home']);
+      return;
+    }
+
+    try {
+      const recipeData = await this.recipeService.getRecipeById(recipeId);
+
+      if (recipeData) {
+        this.recipe = recipeData;
+      } else {
+        this.error = 'Hubo un problema al cargar la receta. Es posible que haya sido eliminada.';
+      }
+    } catch (e) {
+      console.error('Error al buscar la receta:', e);
+      this.error = 'Hubo un problema al cargar los detalles de la receta.';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  // Normaliza la URL del avatar para asegurar que sea absoluta o comience con '/'
+  getAvatarUrl(avatar?: string | null): string {
+    if (!avatar) return 'assets/logos/default-avatar.png';
+    // Si ya es URL absoluta o data:, devolver tal cual
+    if (/^https?:\/\//i.test(avatar) || avatar.startsWith('data:')) return avatar;
+    // Asegurar que empiece por '/'
+    return avatar.startsWith('/') ? avatar : `/${avatar}`;
+  }
+
+  getIngredientName(ing: any): string {
+    if (!ing) return '';
+    if (typeof ing === 'string') {
+      try {
+        const parsed = JSON.parse(ing);
+        if (parsed && typeof parsed === 'object' && parsed.nombre) {
+          return parsed.nombre;
+        }
+      } catch {}
+      return ing;
+    }
+    return ing.nombre || '';
+  }
+
+  getIngredientImportance(ing: any): string {
+    if (!ing) return 'obligatorio';
+    if (typeof ing === 'string') {
+      try {
+        const parsed = JSON.parse(ing);
+        if (parsed && typeof parsed === 'object' && parsed.importancia) {
+          return parsed.importancia;
+        }
+      } catch {}
+      return 'obligatorio';
+    }
+    return ing.importancia || 'obligatorio';
+  }
+
+  getIngredientReplacement(ing: any): string {
+    if (!ing) return '';
+    if (typeof ing === 'string') {
+      try {
+        const parsed = JSON.parse(ing);
+        if (parsed && typeof parsed === 'object' && parsed.reemplazo) {
+          return parsed.reemplazo;
+        }
+      } catch {}
+      return '';
+    }
+    return ing.reemplazo || '';
+  }
+
+  nextImage(): void {
+    if (this.recipe && this.recipe.images.length > 0) {
+      this.currentIndex = (this.currentIndex + 1) % this.recipe.images.length;
+    }
+  }
+
+  prevImage(): void {
+    if (this.recipe && this.recipe.images.length > 0) {
+      this.currentIndex =
+        (this.currentIndex - 1 + this.recipe.images.length) % this.recipe.images.length;
+    }
+  }
+
+  async submitComment(): Promise<void> {
+    if (!this.recipe) return;
+
+    if (!this.authService.isLoged()) {
+      Swal.fire({
+        title: '¡Necesitas iniciar sesión!',
+        text: 'Para comentar, primero debes iniciar sesión.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Iniciar Sesión',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.router.navigate(['/login']);
+        }
       });
+      return;
+    }
 
-      const fixture = TestBed.createComponent(RecipeDetail);
-      component = fixture.componentInstance;
-    });
+    const text = (this.newComment || '').trim();
+    if (!text) {
+      await Swal.fire({ icon: 'warning', title: 'Escribe un comentario' });
+      return;
+    }
 
-    it('F-P01: this.recipe nulo hace return sin llamar al servicio', async () => {
-      component.recipe = undefined;
-      await component.downloadPDF();
-      expect(mockRecipeService.downloadPDF).not.toHaveBeenCalled();
-    });
+    const recipeId = this.recipe.id;
 
-    it('F-P02: Descarga exitosa muestra toast de confirmación', async () => {
-      component.recipe = { id: 'r1' } as any;
-      mockRecipeService.downloadPDF.and.returnValue(Promise.resolve());
-      await component.downloadPDF();
-      expect(mockRecipeService.downloadPDF).toHaveBeenCalledWith('r1');
-      expect(Swal.fire).toHaveBeenCalled();
-    });
+    try {
+      await this.recipeService.addComment(recipeId, { message: text });
+      const updatedRecipe = await this.recipeService.getRecipeById(recipeId);
+      if (updatedRecipe) {
+        this.recipe = updatedRecipe;
+      }
 
-    it('F-P06: Error inesperado en el componente muestra toast de error', async () => {
-      component.recipe = { id: 'r1' } as any;
-      mockRecipeService.downloadPDF.and.returnValue(Promise.reject(new Error('Crash')));
-      spyOn(console, 'error');
-      await component.downloadPDF();
-      expect(Swal.fire).toHaveBeenCalled();
-    });
-  });
-
-  describe('RecipeCrudService', () => {
-    let service: RecipeCrudService;
-    let mockState: any;
-    let httpTestingController: HttpTestingController;
-    let mockAnchor: any;
-
-    beforeEach(() => {
-      mockState = {
-        getRecipeUrl: (id: string) => `/api/recipes/${id}`,
-        getAuthOptions: () => ({ headers: {} }),
-        setError: jasmine.createSpy('setError')
-      };
-
-      TestBed.configureTestingModule({
-        imports: [HttpClientTestingModule],
-        providers: [
-          RecipeCrudService,
-          { provide: RecipeStateService, useValue: mockState }
-        ]
+      this.newComment = '';
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: 'Comentario agregado',
+        showConfirmButton: false,
+        timer: 1500,
       });
+    } catch (e) {
+      console.error('Error al agregar el comentario:', e);
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo agregar el comentario.' });
+    }
+  }
 
-      service = TestBed.inject(RecipeCrudService);
-      httpTestingController = TestBed.inject(HttpTestingController);
+  canEdit(): boolean {
+    if (!this.recipe) return false;
+    const user = this.authService.getUserProfile();
+    if (!user) return false;
 
-      // Global spies for DOM manipulation
-      mockAnchor = { href: '', download: '', click: jasmine.createSpy('click') };
-      spyOn(document, 'createElement').and.returnValue(mockAnchor as any);
-      spyOn(document.body, 'appendChild');
-      spyOn(document.body, 'removeChild');
-      spyOn(window.URL, 'createObjectURL').and.returnValue('blob:url');
-      spyOn(window.URL, 'revokeObjectURL');
+    if (this.recipe.user && this.recipe.user.id === user.id) {
+      return true;
+    }
+    return false;
+  }
+
+  goToEdit(): void {
+    if (!this.recipe || !this.canEdit()) return;
+    this.router.navigate(['/recipe', this.recipe.id, 'edit']);
+  }
+
+  async deleteRecipe(): Promise<void> {
+    if (!this.recipe || !this.canEdit()) return;
+
+    const result = await Swal.fire({
+      title: 'Eliminar receta',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
     });
 
-    afterEach(() => {
-      // Avoid .verify() if it's causing mysterious failures in async tests
-    });
+    if (result.isConfirmed) {
+      try {
+        const success = await this.recipeService.deleteRecipe(this.recipe!.id);
 
-    it('F-P03: downloadPDF dispara la descarga (service level)', async () => {
-      const blob = new Blob(['data'], { type: 'application/pdf' });
-      const promise = service.downloadPDF('r1');
-      httpTestingController.expectOne('/api/recipes/r1/download?format=pdf').flush(blob);
-      await promise;
-      expect(mockAnchor.click).toHaveBeenCalled();
-    });
+        if (success) {
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Receta eliminada',
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          this.router.navigate(['/profile']);
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'La receta no pudo ser eliminada (posiblemente error del servidor).',
+          });
+        }
+      } catch (e) {
+        console.error('Error al eliminar la receta:', e);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de Red',
+          text: 'Hubo un problema de conexión al intentar eliminar la receta.',
+        });
+      }
+    }
+  }
 
-    it('F-P04: downloadImage dispara la descarga de imagen', async () => {
-      const blob = new Blob(['data'], { type: 'image/png' });
-      const promise = service.downloadImage('r1');
-      httpTestingController.expectOne('/api/recipes/r1/download?format=image').flush(blob);
-      await promise;
-      expect(mockAnchor.click).toHaveBeenCalled();
-    });
+  async downloadPDF(): Promise<void> {
+    if (!this.recipe) return;
 
-    it('F-P05: Error HTTP en el servicio llama a setError', async () => {
-      const promise = service.downloadPDF('r1');
-      httpTestingController.expectOne('/api/recipes/r1/download?format=pdf').error(new ErrorEvent('Network error'), { status: 500 });
-      await promise;
-      expect(mockState.setError).toHaveBeenCalled();
-    });
-  });
-});
+    try {
+      await this.recipeService.downloadPDF(this.recipe.id);
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: 'PDF descargado',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } catch (e) {
+      console.error('Error al descargar PDF:', e);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo descargar el PDF de la receta.',
+      });
+    }
+  }
+
+  async downloadImage(): Promise<void> {
+    if (!this.recipe || !this.recipe.images || this.recipe.images.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Sin imagen',
+        text: 'Esta receta no tiene imágenes para descargar.',
+      });
+      return;
+    }
+
+    try {
+      await this.recipeService.downloadImage(this.recipe.id);
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: 'Imagen descargada',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } catch (e) {
+      console.error('Error al descargar imagen:', e);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo descargar la imagen de la receta.',
+      });
+    }
+  }
+}

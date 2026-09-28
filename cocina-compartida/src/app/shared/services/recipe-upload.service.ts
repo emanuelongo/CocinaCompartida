@@ -65,6 +65,8 @@ export class RecipeUploadService {
       name: recipe.name,
       descripcion: recipe.descripcion,
       category: recipe.category,
+      dificultad: recipe.dificultad || 'media',
+      tiempoPreparacion: recipe.tiempoPreparacion || null,
       servings: recipe.servings || 2,
     });
 

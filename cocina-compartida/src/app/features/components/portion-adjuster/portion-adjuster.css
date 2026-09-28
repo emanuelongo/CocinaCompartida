@@ -118,12 +118,52 @@
   color: #7c8781;
   text-decoration: line-through;
 }
-.adjusted-ingredients small {
+.adjusted-ingredients small,
+.adjusted-ingredients small.unscalable-note {
   display: block;
   margin-top: 2px;
   color: #7c8781;
   font-size: 0.72rem;
 }
+
+.ingredient-info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ingredient-name {
+  font-size: 1rem;
+}
+
+.ingredient-badge {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: white;
+}
+
+.badge-opcional {
+  background-color: #64748b;
+}
+
+.badge-reemplazable {
+  background-color: #f59e0b;
+  cursor: help;
+}
+
+.ingredient-replacement small {
+  display: block;
+  color: #d97706;
+  font-size: 0.8rem;
+  margin-top: 2px;
+  font-style: italic;
+}
+
 .timing-note {
   margin: 0;
   padding: 10px 12px;

@@ -1,556 +1,164 @@
-/* ================================================= */
-/* 1. Base y Contenedor Principal                    */
-/* ================================================= */
-.recipe-detail-container {
-  max-width: 1200px;
-  margin: 2rem auto 5rem;
-  padding: 0 1.5rem;
-  box-sizing: border-box;
-  position: relative;
-}
+<div class="recipe-detail-container" *ngIf="recipe; else notFound">
+  <a routerLink="/home" class="back-button">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M15 18L9 12L15 6"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </a>
 
-/* Botón flotante de regreso */
-.back-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--color-bg-card);
-  border: 1.5px solid var(--color-border);
-  color: var(--color-text-main);
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 1.5rem;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  text-decoration: none;
-}
+  <div class="recipe-main-header">
+    <h1>{{ recipe.name }}</h1>
+    <p>{{ recipe.descripcion }}</p>
+    <div class="recipe-meta-detail">
+      <span class="meta-badge difficulty-badge" 
+            [ngClass]="'badge-' + (recipe.dificultad || 'media')">
+        {{ getDificultadLabel(recipe.dificultad) }}
+      </span>
+      <span class="meta-badge time-badge" *ngIf="recipe.tiempoPreparacion">
+        ⏱ {{ recipe.tiempoPreparacion }} min
+      </span>
+      <span class="meta-badge likes-summary">
+        <i class="fa fa-heart"></i> {{ recipe.likes || 0 }} me gusta
+      </span>
+    </div>
+    <div class="owner-actions">
+      <div *ngIf="canEdit()" class="admin-actions">
+        <button (click)="goToEdit()">Editar receta</button>
+        <button (click)="deleteRecipe()">Eliminar</button>
+      </div>
+      <div class="download-actions" *ngIf="authService.isLoged()">
+        <button (click)="downloadPDF()" class="download-btn pdf-btn">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-8-6z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linejoin="round"
+            />
+            <path d="M14 2v6h6" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+          </svg>
+          Descargar PDF
+        </button>
+        <button
+          (click)="downloadImage()"
+          class="download-btn image-btn"
+          *ngIf="recipe.images && recipe.images.length > 0"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+          >
+            <rect
+              x="3"
+              y="3"
+              width="18"
+              height="18"
+              rx="2"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+            <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
+            <path
+              d="m21 15-5-5-6 6-4-4"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Descargar Imagen
+        </button>
+      </div>
+    </div>
+  </div>
 
-.back-button:hover {
-  background-color: var(--color-primary-light);
-  color: var(--color-primary);
-  border-color: var(--color-primary);
-  transform: translateX(-4px);
-}
+  <div class="image-carousel" *ngIf="recipe.images && recipe.images.length > 0">
+    <img [src]="recipe.images[currentIndex]" [alt]="recipe.name" class="recipe-image" />
 
-.back-button svg {
-  width: 20px;
-  height: 20px;
-}
+    <div class="carousel-controls" *ngIf="recipe.images.length > 1">
+      <button (click)="prevImage()" class="control-btn prev-btn">❮</button>
+      <button (click)="nextImage()" class="control-btn next-btn">❯</button>
+    </div>
 
-/* ================================================= */
-/* 2. Encabezado de la Receta                        */
-/* ================================================= */
-.recipe-main-header {
-  background: var(--color-bg-card);
-  border-radius: var(--radius-xl);
-  padding: 2.5rem;
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 2rem;
-  text-align: center;
-}
+    <div class="image-counter">{{ currentIndex + 1 }} / {{ recipe.images.length }}</div>
+  </div>
 
-.recipe-main-header h1 {
-  font-family: 'Outfit', sans-serif;
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800;
-  color: var(--color-dark);
-  margin: 0 0 1rem 0;
-  line-height: 1.2;
-}
+  <div class="author-info" *ngIf="recipe.user">
+    <img [src]="getAvatarUrl(recipe.user.avatar)" alt="Avatar" class="author-avatar" />
+    <span
+      >Creado por: <strong>{{ recipe.user.username }}</strong></span
+    >
+  </div>
 
-.recipe-main-header > p {
-  font-size: 1.15rem;
-  color: var(--color-text-muted);
-  line-height: 1.6;
-  max-width: 800px;
-  margin: 0 auto 1.5rem;
-}
+  <div class="sections-container">
+    <div class="ingredients-section">
+      <h2>Ingredientes</h2>
+      <app-portion-adjuster
+        [recipeId]="recipe.id"
+        [originalIngredients]="recipe.ingredients"
+        [originalServings]="recipe.servings || 2"
+      >
+      </app-portion-adjuster>
+    </div>
 
-.likes-summary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--color-accent-pink-bg);
-  color: var(--color-accent-pink);
-  padding: 6px 16px;
-  border-radius: var(--radius-full);
-  font-size: 0.95rem;
-  font-weight: 700;
-  border: 1px solid rgba(244, 63, 94, 0.2);
-  margin-bottom: 1.5rem;
-}
+    <div class="steps-section">
+      <h2>Pasos</h2>
+      <ol>
+        <li *ngFor="let step of recipe.steps">{{ step }}</li>
+      </ol>
+    </div>
+  </div>
 
-.likes-summary i {
-  color: var(--color-accent-pink);
-}
+  <app-cooking-experience-panel [recipeId]="recipe.id" [recipeName]="recipe.name">
+  </app-cooking-experience-panel>
 
-/* --- Acciones de Propietario y Descarga --- */
-.owner-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-}
+  <div class="comments-section">
+    <h2>Comentarios</h2>
 
-.admin-actions,
-.download-actions {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
+    <div class="comment-form">
+      <textarea [(ngModel)]="newComment" placeholder="Escribe tu comentario..."></textarea>
+      <button (click)="submitComment()">Comentar</button>
+    </div>
 
-.admin-actions button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border-radius: var(--radius-full);
-  font-size: 0.88rem;
-  font-weight: 700;
-  cursor: pointer;
-  border: none;
-  transition: all var(--transition-fast);
-}
+    <div
+      *ngIf="recipe.comments && recipe.comments.length > 0; else noComments"
+      class="comments-list"
+    >
+      <div class="comment-item" *ngFor="let c of recipe.comments">
+        <img [src]="getAvatarUrl(c.user.avatar)" class="comment-avatar" alt="avatar" />
+        <div class="comment-body">
+          <div class="comment-meta">
+            <strong>{{ c.user.username }}</strong>
+            <span class="comment-date">{{ c.createdAt | date: 'short' }}</span>
+          </div>
+          <p class="comment-text">{{ c.message }}</p>
+        </div>
+      </div>
+    </div>
+    <ng-template #noComments>
+      <p class="no-comments">Aún no hay comentarios. ¡Sé el primero en comentar!</p>
+    </ng-template>
+  </div>
+</div>
 
-.admin-actions button:first-child {
-  background-color: var(--color-dark);
-  color: white;
-}
-
-.admin-actions button:first-child:hover {
-  background-color: var(--color-primary);
-  transform: translateY(-2px);
-}
-
-.admin-actions button:last-child {
-  background-color: var(--color-error-bg);
-  color: var(--color-error);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.admin-actions button:last-child:hover {
-  background-color: var(--color-error);
-  color: white;
-  transform: translateY(-2px);
-}
-
-.download-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border-radius: var(--radius-full);
-  font-size: 0.88rem;
-  font-weight: 700;
-  cursor: pointer;
-  border: none;
-  transition: all var(--transition-fast);
-}
-
-.pdf-btn {
-  background: linear-gradient(135deg, var(--color-primary) 0%, #d97706 100%);
-  color: white;
-  box-shadow: 0 2px 10px rgba(239, 102, 68, 0.25);
-}
-
-.pdf-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
-}
-
-.image-btn {
-  background: linear-gradient(135deg, var(--color-primary) 0%, #281086 100%);
-  color: white;
-  box-shadow: 0 2px 10px rgba(22, 16, 185, 0.25);
-}
-
-.image-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(16, 61, 185, 0.4);
-}
-
-/* ================================================= */
-/* 3. Carrusel de Imágenes                           */
-/* ================================================= */
-.image-carousel {
-  position: relative;
-  width: 100%;
-  height: 480px;
-  max-height: 60vh;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  margin-bottom: 2.5rem;
-  box-shadow: var(--shadow-lg);
-  background-color: #0f172a;
-}
-
-.recipe-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.carousel-controls {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  transform: translateY(-50%);
-  padding: 0 1rem;
-  pointer-events: none;
-}
-
-.control-btn {
-  pointer-events: all;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(8px);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.control-btn:hover {
-  background: var(--color-primary);
-  transform: scale(1.1);
-}
-
-.image-counter {
-  position: absolute;
-  bottom: 16px;
-  right: 16px;
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(8px);
-  color: white;
-  padding: 6px 14px;
-  border-radius: var(--radius-full);
-  font-size: 0.82rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* ================================================= */
-/* 4. Info del Autor                                 */
-/* ================================================= */
-.author-info {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 2rem;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.author-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--color-primary-subtle);
-}
-
-.author-info span {
-  font-size: 0.95rem;
-  color: var(--color-text-body);
-}
-
-.author-info strong {
-  color: var(--color-dark);
-}
-
-.author-info:hover strong {
-  color: var(--color-primary);
-}
-
-/* ================================================= */
-/* 5. Contenido: Ingredientes y Pasos en 2 Columnas  */
-/* ================================================= */
-.sections-container {
-  display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: 2rem;
-  margin-bottom: 3.5rem;
-}
-
-.ingredients-section,
-.steps-section {
-  background: var(--color-bg-card);
-  padding: 2rem;
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
-}
-
-.ingredients-section h2,
-.steps-section h2 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 2px solid var(--color-primary-subtle);
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: var(--color-dark);
-}
-
-.steps-section ol {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  counter-reset: step;
-}
-
-.steps-section ol li {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 1.25rem;
-  background: var(--color-bg-input);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--color-text-body);
-}
-
-.steps-section ol li::before {
-  counter-increment: step;
-  content: counter(step);
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary) 0%, #d97706 100%);
-  color: white;
-  font-weight: 800;
-  font-size: 0.95rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.3);
-}
-
-/* ================================================= */
-/* 6. Sección de Comentarios                         */
-/* ================================================= */
-.comments-section {
-  background: var(--color-bg-card);
-  padding: 2.5rem;
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
-}
-
-.comments-section > h2 {
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: var(--color-dark);
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 2px solid var(--color-primary-subtle);
-}
-
-.comment-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2.5rem;
-}
-
-.comment-form textarea {
-  width: 100%;
-  padding: 14px 18px;
-  border-radius: var(--radius-md);
-  border: 1.5px solid var(--color-border);
-  background: var(--color-bg-input);
-  font-family: inherit;
-  font-size: 0.95rem;
-  resize: vertical;
-  min-height: 100px;
-}
-
-.comment-form textarea:focus {
-  background: white;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
-  outline: none;
-}
-
-.comment-form button {
-  align-self: flex-end;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, var(--color-primary) 0%, #d97706 100%);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: var(--radius-full);
-  font-size: 0.92rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(234, 88, 12, 0.25);
-  transition: all var(--transition-fast);
-}
-
-.comment-form button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
-}
-
-.comments-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.comment-item {
-  display: flex;
-  gap: 16px;
-  padding: 1.25rem;
-  background: var(--color-bg-input);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-}
-
-.comment-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1.5px solid var(--color-border);
-  flex-shrink: 0;
-}
-
-.comment-body {
-  flex: 1;
-}
-
-.comment-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 6px;
-}
-
-.comment-meta strong {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--color-dark);
-}
-
-.comment-date {
-  font-size: 0.8rem;
-  color: var(--color-text-light);
-}
-
-.comment-text {
-  margin: 0;
-  line-height: 1.5;
-  font-size: 0.92rem;
-  color: var(--color-text-body);
-}
-
-.no-comments {
-  text-align: center;
-  padding: 3rem 1.5rem;
-  background: var(--color-bg-input);
-  border-radius: var(--radius-lg);
-  color: var(--color-text-muted);
-  font-size: 1rem;
-}
-
-/* ================================================= */
-/* 7. Estado 404 / Error                             */
-/* ================================================= */
-.error-message {
-  text-align: center;
-  padding: 5rem 2rem;
-  max-width: 500px;
-  margin: 3rem auto;
-  background: white;
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
-  border: 1px solid var(--color-border);
-}
-
-.error-message h1 {
-  font-size: 4rem;
-  font-weight: 800;
-  color: var(--color-primary);
-  margin: 0 0 1rem 0;
-}
-
-.error-message p {
-  font-size: 1.15rem;
-  color: var(--color-text-muted);
-  margin-bottom: 1.5rem;
-}
-
-.error-message button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--color-primary) 0%, #d97706 100%);
-  color: white;
-  border: none;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(234, 88, 12, 0.25);
-  transition: all var(--transition-fast);
-}
-
-.error-message button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
-}
-
-/* ================================================= */
-/* 8. Responsividad                                  */
-/* ================================================= */
-@media (max-width: 900px) {
-  .sections-container {
-    grid-template-columns: 1fr;
-  }
-
-  .recipe-main-header {
-    padding: 1.75rem 1.25rem;
-  }
-
-  .image-carousel {
-    height: 320px;
-  }
-
-  .comments-section {
-    padding: 1.75rem 1.25rem;
-  }
-
-  .error-message {
-    padding: 3rem 1.5rem;
-    margin: 2rem 1rem;
-  }
-}
+<ng-template #notFound>
+  <div class="error-message">
+    <h1>404</h1>
+    <p>Receta no encontrada.</p>
+    <button [routerLink]="['/home']">Volver al inicio</button>
+  </div>
+</ng-template>
