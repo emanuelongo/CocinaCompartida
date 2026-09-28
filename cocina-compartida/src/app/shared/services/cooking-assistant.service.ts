@@ -14,7 +14,7 @@ export interface AssistantMessage {
 })
 export class CookingAssistantService {
 
-  private readonly API_KEY = 'AQUÍ SE PONE LA CLAVE DE API DE GOOGLE GEMINI';
+  private readonly API_KEY = '';
 
   private readonly API_URL =
     'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent';

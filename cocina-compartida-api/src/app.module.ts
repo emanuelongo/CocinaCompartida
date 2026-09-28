@@ -8,7 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UploadsModule } from './uploads/uploads.module';
 import { SeederModule } from './seeder/seeder.module';
-import { CookingJournalModule } from './';
+import { CookingJournalModule } from './cooking-journal/cooking-journal.module';
 
 @Module({
   imports: [
