@@ -61,3 +61,5 @@ deepeval-tests/.pytest_cache/
 
 # TypeScript compiled output (si se transpila localmente)
 cocina-compartida/groq-ai-validator/*.js
+
+docker-compose.dev.yml
