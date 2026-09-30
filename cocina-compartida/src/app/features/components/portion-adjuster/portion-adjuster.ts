@@ -91,12 +91,78 @@ export class PortionAdjuster implements OnInit {
     }
   }
 
+  getIngredientText(item: any): string {
+    if (!item) return '';
+    if (typeof item === 'string') {
+      try {
+        const parsed = JSON.parse(item);
+        if (parsed && typeof parsed === 'object') {
+          return this.formatIngredientItem(parsed);
+        }
+      } catch {}
+      return item;
+    }
+    return this.formatIngredientItem(item);
+  }
+
+  private formatIngredientItem(item: any): string {
+    const name = item.nombre || item.name || '';
+    if (item.cantidad !== undefined && item.cantidad !== null && item.cantidad !== '') {
+      const unit = item.unidad === 'otros' ? item.otraUnidad || '' : item.unidad || '';
+      const unitStr = unit ? ` ${unit} de ` : ' ';
+      return `${item.cantidad}${unitStr}${name}`.trim();
+    }
+    return name;
+  }
+
+  getIngredientImportance(item: any): string {
+    const raw = item?.original ?? item?.adjusted ?? item;
+    if (!raw) return '';
+    if (typeof raw === 'string') {
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object' && parsed.importancia) {
+          return parsed.importancia;
+        }
+      } catch {}
+      return '';
+    }
+    return raw.importancia || '';
+  }
+
+  getIngredientReplacement(item: any): string {
+    const raw = item?.original ?? item?.adjusted ?? item;
+    if (!raw) return '';
+    if (typeof raw === 'string') {
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object' && parsed.reemplazo) {
+          return parsed.reemplazo;
+        }
+      } catch {}
+      return '';
+    }
+    return raw.reemplazo || '';
+  }
+
+  getImportanceLabel(imp: string): string {
+    switch (imp) {
+      case 'obligatorio': return '⭐ Obligatorio';
+      case 'opcional': return '✨ Opcional';
+      case 'reemplazable': return '🔄 Reemplazable';
+      default: return '';
+    }
+  }
+
   private showOriginalIngredients(): void {
-    this.displayedIngredients = this.originalIngredients.map((ingredient) => ({
-      original: ingredient,
-      adjusted: ingredient,
-      scalable: false,
-    }));
+    this.displayedIngredients = this.originalIngredients.map((ingredient) => {
+      const text = this.getIngredientText(ingredient);
+      return {
+        original: ingredient,
+        adjusted: text,
+        scalable: false,
+      };
+    });
     this.checkedIngredients = this.displayedIngredients.map(() => false);
   }
 

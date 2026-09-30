@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, HostListener, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +10,7 @@ import { Recipe } from '../../interfaces/recipe';
   selector: 'app-header',
   standalone: true,
   imports: [RouterLink, CommonModule, FormsModule],
-  templateUrl: './header.html', // Asegúrate de tener este archivo
+  templateUrl: './header.html',
   styleUrls: ['./header.css']
 })
 export class Header {
@@ -26,6 +26,8 @@ export class Header {
   isMobileMenuOpen = signal(false);
   // Menú desplegable del usuario
   userMenuOpen = signal(false);
+  // Menú desplegable de filtros unificado
+  filtersMenuOpen = signal(false);
 
   readonly categories = [
     { id: 'todas', name: 'Todas las recetas' },
@@ -35,6 +37,47 @@ export class Header {
     { id: 'bebidas', name: 'Bebidas' },
     { id: 'guarniciones', name: 'Guarniciones' }
   ];
+
+  toggleFiltersMenu() {
+    this.filtersMenuOpen.update(open => !open);
+    if (this.filtersMenuOpen()) {
+      this.closeUserMenu();
+      this.showSuggestions.set(false);
+    }
+  }
+
+  closeFiltersMenu() {
+    this.filtersMenuOpen.set(false);
+  }
+
+  getActiveFilterCount(): number {
+    let count = 0;
+    if (this.selectedCategory !== 'todas') count++;
+    count += this.searchService.currentDificultad().length;
+    count += this.searchService.currentIngredientFilter().length;
+    count += this.searchService.currentTimeFilter().length;
+    return count;
+  }
+
+  clearAllFilters() {
+    this.selectedCategory = 'todas';
+    this.searchService.filterByCategory('todas');
+    this.searchService.filterByDificultad([]);
+    this.searchService.filterByIngredientCount([]);
+    this.searchService.filterByTime([]);
+    this.router.navigate(['/explore']);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.filters-dropdown-wrapper')) {
+      this.closeFiltersMenu();
+    }
+    if (!target.closest('.user-dropdown')) {
+      this.closeUserMenu();
+    }
+  }
 
   toggleMobileMenu() {
     this.isMobileMenuOpen.update(open => !open);
@@ -47,6 +90,9 @@ export class Header {
   // Menú del usuario
   toggleUserMenu() {
     this.userMenuOpen.update(open => !open);
+    if (this.userMenuOpen()) {
+      this.closeFiltersMenu();
+    }
   }
 
   closeUserMenu() {
@@ -141,4 +187,57 @@ export class Header {
     this.searchService.setSortOption(this.sortOption);
     this.router.navigate(['/explore']);
   }
-}
+
+  // ── Custom filter dropdowns ──────────────────────────────
+  dificultadMenuOpen = false;
+  ingredientesMenuOpen = false;
+  tiempoMenuOpen = false;
+
+  toggleMenu(menu: 'dificultad' | 'ingredientes' | 'tiempo') {
+    this.dificultadMenuOpen  = menu === 'dificultad'  ? !this.dificultadMenuOpen  : false;
+    this.ingredientesMenuOpen = menu === 'ingredientes' ? !this.ingredientesMenuOpen : false;
+    this.tiempoMenuOpen      = menu === 'tiempo'       ? !this.tiempoMenuOpen      : false;
+  }
+
+  toggleDificultad(val: string) {
+    let current = [...this.searchService.currentDificultad()];
+    if (val === 'todas') {
+      current = [];
+    } else {
+      const idx = current.indexOf(val);
+      if (idx >= 0) current.splice(idx, 1); else current.push(val);
+    }
+    this.searchService.filterByDificultad(current);
+    this.router.navigate(['/explore']);
+  }
+
+  toggleIngredient(val: string) {
+    let current = [...this.searchService.currentIngredientFilter()];
+    if (val === 'todas') {
+      current = [];
+    } else {
+      const idx = current.indexOf(val as any);
+      if (idx >= 0) current.splice(idx, 1); else current.push(val as any);
+    }
+    this.searchService.filterByIngredientCount(current);
+    this.router.navigate(['/explore']);
+  }
+
+  toggleTime(val: string) {
+    let current = [...this.searchService.currentTimeFilter()];
+    if (val === 'todas') {
+      current = [];
+    } else {
+      const idx = current.indexOf(val as any);
+      if (idx >= 0) current.splice(idx, 1); else current.push(val as any);
+    }
+    this.searchService.filterByTime(current);
+    this.router.navigate(['/explore']);
+  }
+
+  getAvatarUrl(avatar?: string | null): string {
+    if (!avatar) return 'logos/default.webp';
+    if (/^https?:\/\//i.test(avatar) || avatar.startsWith('data:')) return avatar;
+    return avatar.startsWith('/') ? avatar : `/${avatar}`;
+  }
+}

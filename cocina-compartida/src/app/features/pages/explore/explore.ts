@@ -19,8 +19,8 @@ export class Explore implements AfterViewInit, OnDestroy {
   authService = inject(Auth);
   private router = inject(Router);
   isLoading = signal<boolean>(false);
-  private previousRecipeCount = 0;
-
+  private previousTotalRecipeCount = 0;
+  private initialLoaded = false;
 
   @ViewChild('loadMoreTrigger') loadMoreTrigger!: ElementRef;
   private observer?: IntersectionObserver;
@@ -49,11 +49,17 @@ export class Explore implements AfterViewInit, OnDestroy {
     this.router.navigate(['/recipe', randomRecipe.id]);
   }
 
-  readonly allRecipes = computed(() =>
-    this.searchService.results().length > 0
+  readonly allRecipes = computed(() => {
+    const hasFilters = typeof this.searchService.hasActiveFilters === 'function'
+      ? this.searchService.hasActiveFilters()
+      : false;
+    if (hasFilters) {
+      return this.searchService.results();
+    }
+    return this.searchService.results().length > 0
       ? this.searchService.results()
-      : this.recipeService.recipes()
-  );
+      : this.recipeService.recipes();
+  });
   private readonly recipesPerPage = 6;
   visibleRecipeCount = signal<number>(this.recipesPerPage);
 
@@ -63,11 +69,23 @@ export class Explore implements AfterViewInit, OnDestroy {
   });
 
   private recipeUpdateEffect = effect(() => {
-    const currentCount = this.allRecipes().length;
-    if (currentCount > this.previousRecipeCount && this.previousRecipeCount !== 0) {
+    const totalRecipes = this.recipeService.recipes().length;
+    if (!this.initialLoaded) {
+      if (totalRecipes > 0) {
+        this.previousTotalRecipeCount = totalRecipes;
+        this.initialLoaded = true;
+      }
+      return;
+    }
+
+    const hasActiveFilters = typeof this.searchService.hasActiveFilters === 'function'
+      ? this.searchService.hasActiveFilters()
+      : false;
+
+    if (totalRecipes > this.previousTotalRecipeCount && !hasActiveFilters) {
       this.handleNewRecipes();
     }
-    this.previousRecipeCount = currentCount;
+    this.previousTotalRecipeCount = totalRecipes;
   });
 
 

@@ -45,9 +45,11 @@ export class ShoppingList implements OnInit {
     const unquantified: string[] = [];
 
     selected.forEach((recipe) => recipe.ingredients.forEach((ingredient) => {
-      const parsed = this.parseIngredient(ingredient);
+      const ingredientText = this.extractIngredientText(ingredient);
+      if (!ingredientText) return;
+      const parsed = this.parseIngredient(ingredientText);
       if (!parsed) {
-        if (!unquantified.includes(ingredient)) unquantified.push(ingredient);
+        if (!unquantified.includes(ingredientText)) unquantified.push(ingredientText);
         return;
       }
       const key = `${parsed.unit}|${parsed.name}`;
@@ -91,8 +93,32 @@ export class ShoppingList implements OnInit {
     localStorage.setItem('cocina-shopping-checked', JSON.stringify(checked));
   }
 
+  private extractIngredientText(item: any): string {
+    if (!item) return '';
+    if (typeof item === 'string') {
+      try {
+        const parsed = JSON.parse(item);
+        if (parsed && typeof parsed === 'object') {
+          return this.formatIngredientItem(parsed);
+        }
+      } catch {}
+      return item;
+    }
+    return this.formatIngredientItem(item);
+  }
+
+  private formatIngredientItem(item: any): string {
+    const name = item.nombre || item.name || '';
+    if (item.cantidad !== undefined && item.cantidad !== null && item.cantidad !== '') {
+      const unit = item.unidad === 'otros' ? item.otraUnidad || '' : item.unidad || '';
+      const unitStr = unit ? ` ${unit} de ` : ' ';
+      return `${item.cantidad}${unitStr}${name}`.trim();
+    }
+    return name;
+  }
+
   private parseIngredient(value: string): { quantity: number; unit: string; name: string } | null {
-    const match = value.trim().match(/^(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+)?)\s*(kg|g|gramos?|kilogramos?|ml|l|litros?|mililitros?|tazas?|cucharadas?|cucharaditas?)\.?\s+(?:de\s+)?(.+)$/i);
+    const match = value.trim().match(/^(\d+(?:[.,]\d+)?(?:\s*\/\s*\d+)?)\s*(kg|g|gramos?|kilogramos?|ml|l|litros?|mililitros?|tazas?|cucharadas?|cda|cucharaditas?|cdta)\.?\s+(?:de\s+)?(.+)$/i);
     if (!match) return null;
     const parts = match[1].replace(',', '.').split('/').map(Number);
     const quantity = parts.length === 2 ? parts[0] / parts[1] : parts[0];

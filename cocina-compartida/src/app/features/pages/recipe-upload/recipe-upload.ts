@@ -62,8 +62,91 @@ export class RecipeUpload implements OnInit {
     });
   }
 
+  getIngredientGroup(index: number): FormGroup {
+    return this.ingredients.at(index) as FormGroup;
+  }
+
+  getIngredientImportance(index: number): string {
+    const group = this.ingredients.at(index);
+    if (!group || !(group instanceof FormGroup)) {
+      return 'obligatorio';
+    }
+    return group.get('importancia')?.value || 'obligatorio';
+  }
+
+  onImportanceChange(index: number): void {
+    const group = this.ingredients.at(index);
+    if (group && group instanceof FormGroup) {
+      const imp = group.get('importancia')?.value;
+      if (imp !== 'reemplazable') {
+        group.get('reemplazo')?.setValue('');
+      }
+    }
+  }
+
+  getIngredientUnit(index: number): string {
+    const group = this.ingredients.at(index);
+    if (!group || !(group instanceof FormGroup)) {
+      return 'g';
+    }
+    return group.get('unidad')?.value || 'g';
+  }
+
+  onUnitChange(index: number): void {
+    const group = this.ingredients.at(index);
+    if (group && group instanceof FormGroup) {
+      const unidad = group.get('unidad')?.value;
+      if (unidad !== 'otros') {
+        group.get('otraUnidad')?.setValue('');
+      }
+    }
+  }
+
+  getIngredientErrors(index: number): string[] {
+    const group = this.ingredients.at(index);
+    if (!group || !(group instanceof FormGroup)) return [];
+
+    const isTouched = group.touched || Object.values(group.controls).some((c) => c.touched);
+    if (!isTouched) return [];
+
+    const errors: string[] = [];
+    const cantidadCtrl = group.get('cantidad');
+    if (cantidadCtrl && (cantidadCtrl.touched || group.touched) && cantidadCtrl.invalid) {
+      if (cantidadCtrl.errors?.['required']) {
+        errors.push('La cantidad es requerida');
+      } else if (cantidadCtrl.errors?.['pattern']) {
+        errors.push('La cantidad no puede contener letras ni caracteres especiales');
+      } else if (cantidadCtrl.errors?.['min']) {
+        errors.push('La cantidad debe ser mayor a 0');
+      } else if (cantidadCtrl.errors?.['max']) {
+        errors.push('La cantidad no puede superar 9999');
+      }
+    }
+
+    const nombreCtrl = group.get('nombre');
+    if (nombreCtrl && (nombreCtrl.touched || group.touched) && nombreCtrl.invalid) {
+      errors.push(
+        'El nombre del ingrediente no puede estar vacío ni contener solo números o caracteres especiales',
+      );
+    }
+
+    const unidadCtrl = group.get('unidad');
+    const otraUnidadCtrl = group.get('otraUnidad');
+    if (
+      unidadCtrl?.value === 'otros' &&
+      otraUnidadCtrl &&
+      (otraUnidadCtrl.touched || group.touched)
+    ) {
+      if (!otraUnidadCtrl.value?.trim()) {
+        errors.push('Debes especificar tu propia unidad de medida');
+      }
+    }
+
+    return errors;
+  }
+
   addIngredient(): void {
-    this.recipeUploadService.addFormArrayItem(this.ingredients);
+    this.recipeUploadService.addFormArrayItem(this.ingredients, true);
   }
 
   removeIngredient(index: number): void {

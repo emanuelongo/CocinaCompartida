@@ -29,12 +29,160 @@
                 </div>
             </div>
 
-            <div class="sort-options">
-                <select [(ngModel)]="sortOption" (change)="onSortChange()" aria-label="Ordenar recetas">
-                    <option value="recent">✨ Más recientes</option>
-                    <option value="oldest">⏳ Más antiguas</option>
-                    <option value="likes">🔥 Más populares</option>
+            <!-- Selector de Ordenar -->
+            <div class="sort-select-wrapper">
+                <select [(ngModel)]="sortOption" (change)="onSortChange()" class="header-sort-select" aria-label="Ordenar recetas">
+                    <option value="recent">✨ Recientes</option>
+                    <option value="oldest">⏳ Antiguas</option>
+                    <option value="likes">🔥 Populares</option>
                 </select>
+            </div>
+
+            <!-- Apartado Unificado: Filtros -->
+            <div class="filters-dropdown-wrapper">
+                <button type="button"
+                        class="filters-trigger-btn"
+                        [class.active]="getActiveFilterCount() > 0 || filtersMenuOpen()"
+                        (click)="toggleFiltersMenu(); $event.stopPropagation()"
+                        aria-label="Abrir filtros de recetas">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Filtros</span>
+                    <span class="filters-count-badge" *ngIf="getActiveFilterCount() > 0">
+                        {{ getActiveFilterCount() }}
+                    </span>
+                    <i class="fas fa-chevron-down filters-chevron" [class.rotated]="filtersMenuOpen()"></i>
+                </button>
+
+                <!-- Panel Desplegable de Filtros -->
+                <div class="filters-panel" *ngIf="filtersMenuOpen()" (click)="$event.stopPropagation()">
+                    <div class="filters-panel-header">
+                        <div class="filters-panel-title">
+                            <i class="fas fa-sliders-h"></i>
+                            <span>Filtros de búsqueda</span>
+                        </div>
+                        <button type="button" class="clear-filters-btn" *ngIf="getActiveFilterCount() > 0" (click)="clearAllFilters()">
+                            <i class="fas fa-undo-alt"></i> Limpiar todo
+                        </button>
+                    </div>
+
+                    <div class="filters-panel-body">
+                        <!-- 1. Categoría -->
+                        <div class="filter-section">
+                            <span class="filter-section-title"><i class="fas fa-utensils"></i> Categoría</span>
+                            <div class="filter-chips-grid">
+                                <button type="button"
+                                        *ngFor="let cat of categories"
+                                        class="filter-chip"
+                                        [class.active]="selectedCategory === cat.id"
+                                        (click)="onCategoryChange(cat.id)">
+                                    {{ cat.name }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="filter-separator"></div>
+
+                        <!-- 2. Dificultad -->
+                        <div class="filter-section">
+                            <span class="filter-section-title"><i class="fas fa-signal"></i> Dificultad</span>
+                            <div class="filter-options-grid">
+                                <label class="filter-checkbox-chip" [class.checked]="searchService.currentDificultad().length === 0">
+                                    <input type="checkbox"
+                                           [checked]="searchService.currentDificultad().length === 0"
+                                           (change)="toggleDificultad('todas')">
+                                    <span>Todas</span>
+                                </label>
+                                <label class="filter-checkbox-chip" [class.checked]="searchService.currentDificultad().includes('facil')">
+                                    <input type="checkbox"
+                                           [checked]="searchService.currentDificultad().includes('facil')"
+                                           (change)="toggleDificultad('facil')">
+                                    <span>🟢 Fácil</span>
+                                </label>
+                                <label class="filter-checkbox-chip" [class.checked]="searchService.currentDificultad().includes('media')">
+                                    <input type="checkbox"
+                                           [checked]="searchService.currentDificultad().includes('media')"
+                                           (change)="toggleDificultad('media')">
+                                    <span>🟡 Media</span>
+                                </label>
+                                <label class="filter-checkbox-chip" [class.checked]="searchService.currentDificultad().includes('dificil')">
+                                    <input type="checkbox"
+                                           [checked]="searchService.currentDificultad().includes('dificil')"
+                                           (change)="toggleDificultad('dificil')">
+                                    <span>🔴 Difícil</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="filter-separator"></div>
+
+                        <!-- 3. Ingredientes -->
+                        <div class="filter-section">
+                            <span class="filter-section-title"><i class="fas fa-carrot"></i> Ingredientes</span>
+                            <div class="filter-options-grid">
+                                <label class="filter-checkbox-chip" [class.checked]="searchService.currentIngredientFilter().length === 0">
+                                    <input type="checkbox"
+                                           [checked]="searchService.currentIngredientFilter().length === 0"
+                                           (change)="toggleIngredient('todas')">
+                                    <span>Todos</span>
+                                </label>
+                                <label class="filter-checkbox-chip" [class.checked]="searchService.currentIngredientFilter().includes('menos5')">
+                                    <input type="checkbox"
+                                           [checked]="searchService.currentIngredientFilter().includes('menos5')"
+                                           (change)="toggleIngredient('menos5')">
+                                    <span>Menos de 5</span>
+                                </label>
+                                <label class="filter-checkbox-chip" [class.checked]="searchService.currentIngredientFilter().includes('mas5')">
+                                    <input type="checkbox"
+                                           [checked]="searchService.currentIngredientFilter().includes('mas5')"
+                                           (change)="toggleIngredient('mas5')">
+                                    <span>5 o más</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="filter-separator"></div>
+
+                        <!-- 4. Tiempo -->
+                        <div class="filter-section">
+                            <span class="filter-section-title"><i class="fas fa-clock"></i> Tiempo de preparación</span>
+                            <div class="filter-options-grid">
+                                <label class="filter-checkbox-chip" [class.checked]="searchService.currentTimeFilter().length === 0">
+                                    <input type="checkbox"
+                                           [checked]="searchService.currentTimeFilter().length === 0"
+                                           (change)="toggleTime('todas')">
+                                    <span>Cualquiera</span>
+                                </label>
+                                <label class="filter-checkbox-chip" [class.checked]="searchService.currentTimeFilter().includes('rapido')">
+                                    <input type="checkbox"
+                                           [checked]="searchService.currentTimeFilter().includes('rapido')"
+                                           (change)="toggleTime('rapido')">
+                                    <span>⚡ &lt;30 min</span>
+                                </label>
+                                <label class="filter-checkbox-chip" [class.checked]="searchService.currentTimeFilter().includes('medio')">
+                                    <input type="checkbox"
+                                           [checked]="searchService.currentTimeFilter().includes('medio')"
+                                           (change)="toggleTime('medio')">
+                                    <span>🕐 30–60 min</span>
+                                </label>
+                                <label class="filter-checkbox-chip" [class.checked]="searchService.currentTimeFilter().includes('largo')">
+                                    <input type="checkbox"
+                                           [checked]="searchService.currentTimeFilter().includes('largo')"
+                                           (change)="toggleTime('largo')">
+                                    <span>🍳 &gt;60 min</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filters-panel-footer">
+                        <span class="filters-summary-text">
+                            {{ getActiveFilterCount() === 0 ? 'Sin filtros aplicados' : getActiveFilterCount() + ' filtro(s) activo(s)' }}
+                        </span>
+                        <button type="button" class="apply-filters-btn" (click)="closeFiltersMenu()">
+                            Aplicar
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -44,12 +192,6 @@
                 <i class="fas fa-compass"></i>
                 <span>Explorar</span>
             </a>
-            <div class="categories-menu">
-                <select [(ngModel)]="selectedCategory" (ngModelChange)="onCategoryChange($event)"
-                    class="category-select" aria-label="Filtrar por categoría">
-                    <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
-                </select>
-            </div>
         </nav>
 
         <!-- Desktop Auth Section -->
@@ -159,19 +301,22 @@
         <!-- Mobile Categories & Sort -->
         <div class="mobile-filters">
             <div class="mobile-filter-group">
-                <label>Categoría</label>
+                <label><i class="fas fa-utensils"></i> Categoría</label>
                 <select [(ngModel)]="selectedCategory" (ngModelChange)="onCategoryChange($event)" class="category-select">
                     <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
                 </select>
             </div>
             <div class="mobile-filter-group">
-                <label>Ordenar</label>
+                <label><i class="fas fa-sort-amount-down"></i> Ordenar</label>
                 <select [(ngModel)]="sortOption" (change)="onSortChange()" class="sort-select">
                     <option value="recent">✨ Más recientes</option>
                     <option value="oldest">⏳ Más antiguas</option>
                     <option value="likes">🔥 Más populares</option>
                 </select>
             </div>
+            <button type="button" *ngIf="getActiveFilterCount() > 0" class="clear-filters-btn mobile-clear-filters-btn" (click)="clearAllFilters()">
+                <i class="fas fa-undo-alt"></i> Limpiar filtros ({{ getActiveFilterCount() }})
+            </button>
         </div>
 
         <nav class="mobile-nav-links">

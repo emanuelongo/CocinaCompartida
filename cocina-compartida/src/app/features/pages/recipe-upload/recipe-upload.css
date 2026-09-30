@@ -135,15 +135,55 @@ legend {
 /* ======================================= */
 /* 4. Campos Dinámicos (Ingredientes/Pasos)*/
 /* ======================================= */
+.section-hint {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-top: -4px;
+  margin-bottom: 12px;
+}
+
+.field-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.field-hint i {
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.field-hint em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.ingredient-row-container {
+  margin-bottom: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .dynamic-field {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 0.75rem;
+}
+
+.ingredient-dynamic-field {
+  width: 100%;
 }
 
 .step-dynamic-field {
   align-items: flex-start;
+  margin-bottom: 0.75rem;
 }
 
 .field-index-badge {
@@ -168,6 +208,225 @@ legend {
 .dynamic-field input,
 .dynamic-field textarea {
   flex: 1;
+}
+
+.ingredient-name-input {
+  flex: 1 1 auto;
+  min-width: 140px;
+}
+
+/* Cantidad y Unidad de Medida */
+.ingredient-cantidad-wrapper {
+  flex: 0 0 85px;
+}
+
+.ingredient-cantidad-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 8px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-align: center;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background-color: var(--color-bg-card);
+  color: var(--color-text-main);
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.ingredient-cantidad-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+}
+
+.ingredient-unit-wrapper {
+  flex: 0 0 110px;
+}
+
+.ingredient-unit-select {
+  width: 100%;
+  height: 42px;
+  padding: 0 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background-color: var(--color-bg-card);
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.ingredient-unit-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+}
+
+.ingredient-unit-select optgroup {
+  font-weight: 700;
+  color: var(--color-primary);
+  background-color: var(--color-bg-card);
+}
+
+.ingredient-unit-select option {
+  font-weight: 500;
+  color: var(--color-text-main);
+}
+
+/* Cuadro de texto para unidad personalizada ('otros') */
+.other-unit-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 38px;
+  padding: 8px 12px;
+  background: #f0fdf4;
+  border-left: 3px solid #10b981;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  animation: fadeInDown 0.2s ease-out;
+}
+
+.other-unit-label-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #047857;
+  white-space: nowrap;
+}
+
+.other-unit-label-tag i {
+  font-size: 0.85rem;
+}
+
+.other-unit-input {
+  flex: 1;
+  height: 38px;
+  padding: 0 12px;
+  font-size: 0.88rem;
+  border: 1.5px solid #a7f3d0;
+  border-radius: var(--radius-sm);
+  background-color: #ffffff;
+  color: var(--color-text-main);
+  transition: all var(--transition-fast);
+}
+
+.other-unit-input:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  outline: none;
+}
+
+.ingredient-errors-container {
+  margin-left: 38px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.importance-select-wrapper {
+  flex-shrink: 0;
+}
+
+.importance-select {
+  height: 42px;
+  padding: 0 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background-color: var(--color-bg-card);
+  color: var(--color-text-body);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+  min-width: 150px;
+}
+
+.importance-select:hover {
+  border-color: var(--color-primary);
+}
+
+.importance-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+}
+
+.importance-select[data-importance="obligatorio"] {
+  border-color: #f97316;
+  background-color: #fff7ed;
+  color: #c2410c;
+}
+
+.importance-select[data-importance="opcional"] {
+  border-color: #10b981;
+  background-color: #ecfdf5;
+  color: #047857;
+}
+
+.importance-select[data-importance="reemplazable"] {
+  border-color: #8b5cf6;
+  background-color: #f5f3ff;
+  color: #6d28d9;
+}
+
+/* Cuadro de texto para ingredientes reemplazables */
+.replacement-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 38px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border-left: 3px solid #8b5cf6;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  animation: fadeInDown 0.2s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.replacement-label-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #6d28d9;
+  white-space: nowrap;
+}
+
+.replacement-label-tag i {
+  font-size: 0.85rem;
+}
+
+.replacement-input {
+  flex: 1;
+  height: 38px;
+  padding: 0 12px;
+  font-size: 0.88rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: #ffffff;
+  color: var(--color-text-main);
+  transition: all var(--transition-fast);
+}
+
+.replacement-input:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  outline: none;
 }
 
 .remove-btn {
@@ -387,5 +646,48 @@ label.upload.primary i {
 
   .submit-recipe-btn {
     max-width: 100%;
+  }
+
+  .ingredient-dynamic-field {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ingredient-cantidad-wrapper {
+    flex: 1 1 70px;
+  }
+
+  .ingredient-unit-wrapper {
+    flex: 1 1 95px;
+  }
+
+  .ingredient-name-input {
+    min-width: 100%;
+    order: 3;
+  }
+
+  .importance-select-wrapper {
+    flex: 1;
+    order: 4;
+  }
+
+  .remove-btn {
+    order: 5;
+  }
+
+  .other-unit-box,
+  .replacement-box {
+    margin-left: 0;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .other-unit-input,
+  .replacement-input {
+    width: 100%;
+  }
+
+  .ingredient-errors-container {
+    margin-left: 0;
   }
 }

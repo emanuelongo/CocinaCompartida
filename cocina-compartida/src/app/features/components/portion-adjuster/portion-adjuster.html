@@ -60,10 +60,16 @@
         <input
           type="checkbox"
           [(ngModel)]="checkedIngredients[index]"
-          [attr.aria-label]="'Marcar ' + ingredient.adjusted + ' como disponible'"
+          [attr.aria-label]="'Marcar ' + getIngredientText(ingredient.adjusted) + ' como disponible'"
         />
-        <span>{{ ingredient.adjusted }}</span>
+        <span>{{ getIngredientText(ingredient.adjusted) }}</span>
       </label>
+      <span *ngIf="getIngredientImportance(ingredient)" class="importance-badge" [ngClass]="'badge-' + getIngredientImportance(ingredient)">
+        {{ getImportanceLabel(getIngredientImportance(ingredient)) }}
+      </span>
+      <small *ngIf="getIngredientImportance(ingredient) === 'reemplazable' && getIngredientReplacement(ingredient)" class="replacement-tag">
+        🔄 Reemplazo: {{ getIngredientReplacement(ingredient) }}
+      </small>
       <small *ngIf="!isOriginal && !ingredient.scalable">Se mantiene sin cambios</small>
     </li>
   </ul>

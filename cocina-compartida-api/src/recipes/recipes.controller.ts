@@ -172,7 +172,9 @@ export class RecipesController {
           try {
             const parsed = JSON.parse(ing);
             if (parsed && typeof parsed === 'object' && parsed.nombre) {
-              text += parsed.nombre;
+              const unit = parsed.unidad === 'otros' ? (parsed.otraUnidad || '') : (parsed.unidad || '');
+              const cantUnit = parsed.cantidad ? `${parsed.cantidad}${unit ? ' ' + unit : ''} de ` : '';
+              text += `${cantUnit}${parsed.nombre}`;
               if (parsed.importancia && parsed.importancia !== 'obligatorio') {
                 text += ` (${parsed.importancia})`;
               }
@@ -186,7 +188,9 @@ export class RecipesController {
             text += ing;
           }
         } else if (ing && typeof ing === 'object') {
-          text += ing.nombre || '';
+          const unit = ing.unidad === 'otros' ? (ing.otraUnidad || '') : (ing.unidad || '');
+          const cantUnit = ing.cantidad ? `${ing.cantidad}${unit ? ' ' + unit : ''} de ` : '';
+          text += `${cantUnit}${ing.nombre || ''}`;
           if (ing.importancia && ing.importancia !== 'obligatorio') {
             text += ` (${ing.importancia})`;
           }

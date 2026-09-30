@@ -101,9 +101,56 @@ export function scaleIngredient(
   ingredient: string,
   scaleFactor: number,
 ): ScaledIngredient {
-  const parsed = parseLeadingQuantity(ingredient);
+  let parsedObj: any = null;
+  if (typeof ingredient === 'string') {
+    try {
+      const obj = JSON.parse(ingredient);
+      if (obj && typeof obj === 'object') parsedObj = obj;
+    } catch {}
+  } else if (ingredient && typeof ingredient === 'object') {
+    parsedObj = ingredient;
+  }
+
+  if (
+    parsedObj &&
+    parsedObj.cantidad !== undefined &&
+    parsedObj.cantidad !== null &&
+    parsedObj.cantidad !== ''
+  ) {
+    const rawQuantity = Number(parsedObj.cantidad);
+    if (
+      Number.isFinite(rawQuantity) &&
+      rawQuantity > 0 &&
+      Number.isFinite(scaleFactor) &&
+      scaleFactor > 0
+    ) {
+      const adjustedQuantity =
+        Math.round((rawQuantity * scaleFactor + Number.EPSILON) * 100) / 100;
+      const unit =
+        parsedObj.unidad === 'otros'
+          ? parsedObj.otraUnidad || ''
+          : parsedObj.unidad || '';
+      const unitStr = unit ? ` ${unit} de ` : ' ';
+      const adjusted = `${formatQuantity(adjustedQuantity)}${unitStr}${parsedObj.nombre || parsedObj.name || ''}`.trim();
+      return {
+        original:
+          typeof ingredient === 'string'
+            ? ingredient
+            : JSON.stringify(ingredient),
+        adjusted,
+        originalQuantity: rawQuantity,
+        adjustedQuantity,
+        unit: unit || undefined,
+        scalable: true,
+      };
+    }
+  }
+
+  const str =
+    typeof ingredient === 'string' ? ingredient : JSON.stringify(ingredient);
+  const parsed = parseLeadingQuantity(str);
   if (!parsed || !Number.isFinite(scaleFactor) || scaleFactor <= 0) {
-    return { original: ingredient, adjusted: ingredient, scalable: false };
+    return { original: str, adjusted: str, scalable: false };
   }
 
   const normalized = normalizeFractions(ingredient);

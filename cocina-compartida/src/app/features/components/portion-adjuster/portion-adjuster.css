@@ -124,6 +124,37 @@
   color: #7c8781;
   font-size: 0.72rem;
 }
+.importance-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 6px;
+  display: inline-flex;
+  align-items: center;
+}
+.badge-obligatorio {
+  background-color: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fdba74;
+}
+.badge-opcional {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #6ee7b7;
+}
+.badge-reemplazable {
+  background-color: #f5f3ff;
+  color: #6d28d9;
+  border: 1px solid #c4b5fd;
+}
+.replacement-tag {
+  color: #6d28d9 !important;
+  font-weight: 600;
+  font-size: 0.8rem !important;
+  margin-left: 6px;
+  display: inline !important;
+}
 .timing-note {
   margin: 0;
   padding: 10px 12px;

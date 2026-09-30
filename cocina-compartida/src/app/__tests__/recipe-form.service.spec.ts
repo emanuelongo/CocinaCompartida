@@ -105,8 +105,8 @@ describe('RecipeFormService – Pruebas Unitarias', () => {
 
       // Assert
       expect(ingredients.length).toBe(3);
-      expect(ingredients.at(0).value).toBe('arroz');
-      expect(ingredients.at(2).value).toBe('sal');
+      expect(ingredients.at(0).value.nombre).toBe('arroz');
+      expect(ingredients.at(2).value.nombre).toBe('sal');
     });
 
     it('RF-08: limpia array existente antes de cargar', () => {
@@ -302,7 +302,8 @@ describe('RecipeFormService – Pruebas Unitarias', () => {
       const ingredients = form.get('ingredients') as FormArray;
       ingredients.at(0).setValue('arroz');
       service.addFormArrayItem(ingredients);
-      ingredients.at(1).setValue('');
+      const group2 = ingredients.at(1) as FormGroup;
+      group2.get('nombre')?.setValue('');
       const steps = form.get('steps') as FormArray;
       steps.at(0).setValue('cocinar');
 
@@ -313,7 +314,8 @@ describe('RecipeFormService – Pruebas Unitarias', () => {
       expect(result.name).toBe('Pizza');
       expect(result.descripcion).toBe('Desc larga test');
       expect(result.category).toBe('Italiana');
-      expect(result.ingredients).toEqual(['arroz']); // filtrado el vacío
+      expect(result.ingredients.length).toBe(1);
+      expect(result.ingredients[0].nombre).toBe('arroz');
       expect(result.steps).toEqual(['cocinar']);
       expect(result.images).toEqual(['img1.jpg']);
     });
@@ -332,6 +334,118 @@ describe('RecipeFormService – Pruebas Unitarias', () => {
       expect(result.ingredients).toEqual([]);
       expect(result.steps).toEqual([]);
       expect(result.images).toEqual([]);
+    });
+  });
+
+  // ──────────── Validaciones de Cantidad y Unidades de Ingredientes ────────────
+  describe('Validaciones de Cantidad y Unidades de Ingredientes (Requerimiento de Usuario)', () => {
+    it('VAL-01: cantidad no permite letras ni caracteres especiales', () => {
+      const group = service.createIngredientGroup('Harina');
+      const cantidadCtrl = group.get('cantidad')!;
+
+      // Con letras
+      cantidadCtrl.setValue('abc');
+      expect(cantidadCtrl.valid).toBeFalse();
+      expect(cantidadCtrl.errors?.['pattern']).toBeTruthy();
+
+      cantidadCtrl.setValue('10g');
+      expect(cantidadCtrl.valid).toBeFalse();
+      expect(cantidadCtrl.errors?.['pattern']).toBeTruthy();
+
+      cantidadCtrl.setValue('veinte');
+      expect(cantidadCtrl.valid).toBeFalse();
+      expect(cantidadCtrl.errors?.['pattern']).toBeTruthy();
+
+      cantidadCtrl.setValue('12#4');
+      expect(cantidadCtrl.valid).toBeFalse();
+      expect(cantidadCtrl.errors?.['pattern']).toBeTruthy();
+    });
+
+    it('VAL-02: cantidad no permite números demasiado grandes (> 9999)', () => {
+      const group = service.createIngredientGroup('Harina');
+      const cantidadCtrl = group.get('cantidad')!;
+
+      cantidadCtrl.setValue(10000);
+      expect(cantidadCtrl.valid).toBeFalse();
+      expect(cantidadCtrl.errors?.['max']).toBeTruthy();
+
+      cantidadCtrl.setValue(999999);
+      expect(cantidadCtrl.valid).toBeFalse();
+      expect(cantidadCtrl.errors?.['max']).toBeTruthy();
+    });
+
+    it('VAL-03: cantidad no permite valores menores o iguales a 0', () => {
+      const group = service.createIngredientGroup('Harina');
+      const cantidadCtrl = group.get('cantidad')!;
+
+      cantidadCtrl.setValue(0);
+      expect(cantidadCtrl.valid).toBeFalse();
+      expect(cantidadCtrl.errors?.['min']).toBeTruthy();
+
+      cantidadCtrl.setValue(-5);
+      expect(cantidadCtrl.valid).toBeFalse();
+      expect(cantidadCtrl.errors?.['min']).toBeTruthy();
+    });
+
+    it('VAL-04: cantidad permite números válidos (enteros y decimales)', () => {
+      const group = service.createIngredientGroup('Harina');
+      const cantidadCtrl = group.get('cantidad')!;
+
+      cantidadCtrl.setValue(250);
+      expect(cantidadCtrl.valid).toBeTrue();
+
+      cantidadCtrl.setValue(1.5);
+      expect(cantidadCtrl.valid).toBeTrue();
+
+      cantidadCtrl.setValue(0.5);
+      expect(cantidadCtrl.valid).toBeTrue();
+
+      cantidadCtrl.setValue(9999);
+      expect(cantidadCtrl.valid).toBeTrue();
+    });
+
+    it('VAL-05: permite seleccionar unidades de peso (g, kg)', () => {
+      const groupG = service.createIngredientGroup('Harina', 200, 'g');
+      expect(groupG.get('unidad')!.value).toBe('g');
+      expect(groupG.valid).toBeTrue();
+
+      const groupKg = service.createIngredientGroup('Arroz', 2, 'kg');
+      expect(groupKg.get('unidad')!.value).toBe('kg');
+      expect(groupKg.valid).toBeTrue();
+    });
+
+    it('VAL-06: permite seleccionar unidades de volumen (ml, L, cdta, cda, taza)', () => {
+      const volumenes = ['ml', 'L', 'cdta', 'cda', 'taza'];
+      volumenes.forEach((u) => {
+        const group = service.createIngredientGroup('Ingrediente', 10, u);
+        expect(group.get('unidad')!.value).toBe(u);
+        expect(group.valid).toBeTrue();
+      });
+    });
+
+    it('VAL-07: permite opcion otros y registra unidad personalizada en prepareFormData', () => {
+      const form = service.createRecipeForm();
+      form.get('name')!.setValue('Sopa deliciosa');
+      form.get('descripcion')!.setValue('Una sopa tradicional muy rica');
+      form.get('category')!.setValue('Almuerzo');
+
+      const ingredients = form.get('ingredients') as FormArray;
+      ingredients.clear();
+      ingredients.push(
+        service.createIngredientGroup('Cilantro fresco', 2, 'otros', 'ramas', 'obligatorio', ''),
+      );
+
+      const steps = form.get('steps') as FormArray;
+      steps.at(0).setValue('Hervir los ingredientes en agua');
+
+      const data = service.prepareFormData(form, ['sopa.jpg']);
+
+      expect(data.ingredients.length).toBe(1);
+      expect(data.ingredients[0].nombre).toBe('Cilantro fresco');
+      expect(data.ingredients[0].cantidad).toBe(2);
+      expect(data.ingredients[0].unidad).toBe('otros');
+      expect(data.ingredients[0].otraUnidad).toBe('ramas');
+      expect(data.ingredients[0].importancia).toBe('obligatorio');
     });
   });
 });

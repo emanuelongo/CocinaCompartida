@@ -77,13 +77,23 @@ export class RecipeDetail implements OnInit {
     if (typeof ing === 'string') {
       try {
         const parsed = JSON.parse(ing);
-        if (parsed && typeof parsed === 'object' && parsed.nombre) {
-          return parsed.nombre;
+        if (parsed && typeof parsed === 'object') {
+          return this.formatIngredientText(parsed);
         }
       } catch {}
       return ing;
     }
-    return ing.nombre || '';
+    return this.formatIngredientText(ing);
+  }
+
+  private formatIngredientText(ing: any): string {
+    const nombre = ing.nombre || ing.name || '';
+    if (ing.cantidad !== undefined && ing.cantidad !== null && ing.cantidad !== '') {
+      const unit = ing.unidad === 'otros' ? ing.otraUnidad || '' : ing.unidad || '';
+      const unitStr = unit ? ` ${unit} de ` : ' ';
+      return `${ing.cantidad}${unitStr}${nombre}`.trim();
+    }
+    return nombre;
   }
 
   getIngredientImportance(ing: any): string {

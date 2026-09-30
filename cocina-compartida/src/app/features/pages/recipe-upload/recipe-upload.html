@@ -45,6 +45,31 @@
             </div>
         </div>
 
+        <!-- Porciones / Personas de la receta original -->
+        <div class="form-group">
+            <label for="recipeServings"><i class="fas fa-users"></i> ¿Para cuántas personas es la receta original? (Porciones base):</label>
+            <input 
+                type="number" 
+                id="recipeServings" 
+                formControlName="servings" 
+                placeholder="Ej. 4" 
+                min="1" 
+                max="100" 
+                step="1"
+            />
+            <small class="field-hint">
+                <i class="fas fa-calculator"></i>
+                Base para calcular porciones: <em>Cantidad nueva = Cantidad original × (Personas deseadas / Personas originales)</em>
+            </small>
+            <div *ngIf="isFieldInvalid('servings')" class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <span *ngIf="recipeForm.get('servings')?.errors?.['required']">Indica para cuántas personas es la receta</span>
+                <span *ngIf="recipeForm.get('servings')?.errors?.['min']">Debe ser para al menos 1 persona</span>
+                <span *ngIf="recipeForm.get('servings')?.errors?.['max']">No puede superar las 100 personas</span>
+                <span *ngIf="recipeForm.get('servings')?.errors?.['pattern']">Ingresa un número entero válido (sin decimales ni letras)</span>
+            </div>
+        </div>
+
         <!-- Descripción -->
         <div class="form-group">
             <label for="recipeDescription"><i class="fas fa-align-left"></i> Descripción:</label>
@@ -67,18 +92,102 @@
         </div>
 
         <div class="form-group">
-            <span id="ingredientsLabel" class="form-label-title">Ingredientes:</span>
+            <span id="ingredientsLabel" class="form-label-title"><i class="fas fa-carrot"></i> Ingredientes:</span>
+            <p class="section-hint">Ingresa cada ingrediente y define si es obligatorio, opcional o reemplazable.</p>
             <fieldset formArrayName="ingredients">
                 <legend>Ingredientes:</legend>
-                <div *ngFor="let ing of ingredients.controls; let i = index" class="dynamic-field">
-                    <div class="field-index-badge">{{ i + 1 }}</div>
-                    <input type="text" [formControlName]="i" placeholder="Ej. 250g de harina de trigo" />
-                    <button type="button" class="remove-btn" (click)="removeIngredient(i)" title="Eliminar ingrediente" aria-label="Eliminar ingrediente">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                    <div *ngIf="isArrayFieldInvalid(ingredients, i)" class="error-message">
-                        <i class="fas fa-exclamation-circle"></i>
-                        Este ingrediente no puede estar vacío ni contener solo números o caracteres especiales
+                <div *ngFor="let ing of ingredients.controls; let i = index" [formGroupName]="i" class="ingredient-row-container">
+                    <div class="dynamic-field ingredient-dynamic-field">
+                        <div class="field-index-badge">{{ i + 1 }}</div>
+
+                        <!-- Cantidad -->
+                        <div class="ingredient-cantidad-wrapper">
+                            <input 
+                                type="number" 
+                                formControlName="cantidad" 
+                                placeholder="Cant." 
+                                class="ingredient-cantidad-input" 
+                                min="0.01" 
+                                max="9999" 
+                                step="any"
+                                title="Cantidad del ingrediente"
+                            />
+                        </div>
+
+                        <!-- Unidad de Medida -->
+                        <div class="ingredient-unit-wrapper">
+                            <select 
+                                formControlName="unidad" 
+                                (change)="onUnitChange(i)" 
+                                class="ingredient-unit-select" 
+                                title="Unidad de medida"
+                            >
+                                <optgroup label="Peso">
+                                    <option value="g">g</option>
+                                    <option value="kg">kg</option>
+                                </optgroup>
+                                <optgroup label="Volumen">
+                                    <option value="ml">ml</option>
+                                    <option value="L">L</option>
+                                    <option value="cdta">cdta</option>
+                                    <option value="cda">cda</option>
+                                    <option value="taza">taza</option>
+                                </optgroup>
+                                <optgroup label="Otros">
+                                    <option value="otros">Otros...</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <!-- Nombre del ingrediente -->
+                        <input type="text" formControlName="nombre" placeholder="Nombre (ej. Harina de trigo)" class="ingredient-name-input" />
+
+                        <!-- Importancia -->
+                        <div class="importance-select-wrapper">
+                            <select formControlName="importancia" (change)="onImportanceChange(i)" class="importance-select" [attr.data-importance]="getIngredientImportance(i)" title="Importancia del ingrediente">
+                                <option value="obligatorio">⭐ Obligatorio</option>
+                                <option value="opcional">✨ Opcional</option>
+                                <option value="reemplazable">🔄 Reemplazable</option>
+                            </select>
+                        </div>
+
+                        <button type="button" class="remove-btn" (click)="removeIngredient(i)" title="Eliminar ingrediente" aria-label="Eliminar ingrediente">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+
+                    <!-- Si la unidad es 'otros', se muestra el cuadro de texto para especificar su propia unidad de medida -->
+                    <div class="other-unit-box" *ngIf="getIngredientUnit(i) === 'otros'">
+                        <div class="other-unit-label-tag">
+                            <i class="fas fa-balance-scale"></i>
+                            <span>Unidad personalizada:</span>
+                        </div>
+                        <input 
+                            type="text" 
+                            formControlName="otraUnidad" 
+                            placeholder="Ej. pizca, rodajas, unidades, dientes, ramas..." 
+                            class="other-unit-input" 
+                        />
+                    </div>
+
+                    <!-- Si es reemplazable, se muestra el cuadro de texto para especificar por cuál se puede reemplazar -->
+                    <div class="replacement-box" *ngIf="getIngredientImportance(i) === 'reemplazable'">
+                        <div class="replacement-label-tag">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>¿Por cuál se puede reemplazar?</span>
+                        </div>
+                        <input type="text" formControlName="reemplazo" placeholder="Ej. Harina de avena, maicena o fécula de maíz" class="replacement-input" />
+                    </div>
+
+                    <div *ngIf="isArrayFieldInvalid(ingredients, i)" class="ingredient-errors-container">
+                        <div *ngFor="let err of getIngredientErrors(i)" class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ err }}
+                        </div>
+                        <div *ngIf="getIngredientErrors(i).length === 0" class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            Revisa que el ingrediente tenga cantidad y nombre válidos
+                        </div>
                     </div>
                 </div>
             </fieldset>

@@ -72,14 +72,22 @@ export class RecipeUploadService {
       recipeForm.get('ingredients') as any,
       recipe.ingredients,
     );
-    this.recipeFormService.clearAndLoadStepsArray(recipeForm.get('steps') as any, recipe.steps);
+    if (typeof (this.recipeFormService as any).clearAndLoadStepsArray === 'function') {
+      (this.recipeFormService as any).clearAndLoadStepsArray(recipeForm.get('steps') as any, recipe.steps);
+    } else {
+      this.recipeFormService.clearAndLoadFormArray(recipeForm.get('steps') as any, recipe.steps);
+    }
 
     this.recipeImageService.images = [...recipe.images];
     this.recipeImageService.currentIndex = 0;
   }
 
   addFormArrayItem(formArray: any, isIngredient = false): void {
-    this.recipeFormService.addFormArrayItem(formArray, isIngredient);
+    if (isIngredient) {
+      this.recipeFormService.addFormArrayItem(formArray, true);
+    } else {
+      this.recipeFormService.addFormArrayItem(formArray);
+    }
   }
 
   removeFormArrayItem(formArray: any, index: number, minItems: number = 1): boolean {

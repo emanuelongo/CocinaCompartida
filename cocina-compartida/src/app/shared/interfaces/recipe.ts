@@ -2,6 +2,9 @@ import { Comment } from './comment';
  
 export interface IngredientItem {
   nombre: string;
+  cantidad?: number | string;
+  unidad?: string;
+  otraUnidad?: string;
   importancia?: 'obligatorio' | 'opcional' | 'reemplazable';
   reemplazo?: string;
 }
@@ -19,9 +22,11 @@ export interface Recipe {
     username: string;
     avatar?: string;
   };
-  category: string; // Nueva propiedad para la categoría
+  category: string;
   likes?: number;
-  likedBy?: string[]; // Array de IDs de usuarios a los que les gusta
+  likedBy?: string[];
   comments?: Comment[];
   createdAt?: string | Date;
+  dificultad?: 'facil' | 'media' | 'dificil';
+  tiempoPreparacion?: number; // en minutos
 }
