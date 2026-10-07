@@ -3,6 +3,8 @@ export interface AccessibilityPreferences {
   autoReadEnabled: boolean;
   speechRate: number;
   preferredVoice: string | null;
+  fontScale: number;
+  highContrast: boolean;
 }
 
 export const DEFAULT_ACCESSIBILITY_PREFERENCES: AccessibilityPreferences = {
@@ -10,4 +12,6 @@ export const DEFAULT_ACCESSIBILITY_PREFERENCES: AccessibilityPreferences = {
   autoReadEnabled: false,
   speechRate: 1,
   preferredVoice: null,
+  fontScale: 1,
+  highContrast: false,
 };

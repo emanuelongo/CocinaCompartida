@@ -65,6 +65,7 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  font-size: calc(16px * var(--accessibility-font-scale, 1));
 }
 
 body {
@@ -77,6 +78,55 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body.high-contrast {
+  color-scheme: dark;
+  --color-primary: #ffd166;
+  --color-primary-hover: #ffbf47;
+  --color-primary-light: #1a1a1a;
+  --color-primary-subtle: #2a2a2a;
+  --color-secondary: #000000;
+  --color-dark: #ffffff;
+  --color-dark-subtle: #f5f5f5;
+  --color-accent-pink: #ff6b6b;
+  --color-accent-pink-bg: #3b1111;
+  --color-accent-emerald: #6ee7b7;
+  --color-accent-amber: #fbbf24;
+  --color-bg-page: #000000;
+  --color-bg-card: #111111;
+  --color-bg-input: #1a1a1a;
+  --color-bg-hover: #2a2a2a;
+  --color-text-main: #ffffff;
+  --color-text-body: #f5f5f5;
+  --color-text-muted: #d1d5db;
+  --color-text-light: #e5e7eb;
+  --color-border: #9ca3af;
+  --color-border-light: #404040;
+  --color-border-focus: #ffd166;
+  --color-error: #ff6b6b;
+  --color-error-bg: #2a0f0f;
+  background-color: var(--color-bg-page);
+  color: var(--color-text-body);
+}
+
+body.high-contrast :is(.footer, .chat-header, .chatbot-toggle.open) {
+  background: #000000;
+  color: #ffffff;
+}
+
+body.high-contrast .action-btn {
+  color: #000000;
+}
+
+body.high-contrast :is(input, select, textarea) {
+  color-scheme: dark;
+}
+
+body.high-contrast :focus-visible {
+  outline: 3px solid var(--color-border-focus);
+  outline-offset: 3px;
 }
 
 h1, h2, h3, h4, h5, h6 {

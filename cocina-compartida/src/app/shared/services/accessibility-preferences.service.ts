@@ -21,6 +21,7 @@ export class AccessibilityPreferencesService {
 
     const local = this.readLocalPreferences();
     this.preferences.set(local);
+    this.applyPreferences(local);
 
     if (token) {
       try {
@@ -30,6 +31,7 @@ export class AccessibilityPreferencesService {
         const normalized = this.normalize(remote);
         this.preferences.set(normalized);
         this.persistLocally(normalized);
+        this.applyPreferences(normalized);
       } catch {
         // La lectura sigue disponible con la configuración local si la API no responde.
       }
@@ -44,6 +46,7 @@ export class AccessibilityPreferencesService {
     const next = this.normalize({ ...this.preferences(), ...changes });
     this.preferences.set(next);
     this.persistLocally(next);
+    this.applyPreferences(next);
 
     if (localStorage.getItem('token')) {
       try {
@@ -53,6 +56,7 @@ export class AccessibilityPreferencesService {
         const normalized = this.normalize(remote);
         this.preferences.set(normalized);
         this.persistLocally(normalized);
+        this.applyPreferences(normalized);
       } catch {
         // Se conserva la preferencia local para no inutilizar el asistente.
       }
@@ -78,6 +82,9 @@ export class AccessibilityPreferencesService {
 
   private normalize(value: Partial<AccessibilityPreferences>): AccessibilityPreferences {
     const rate = Number(value.speechRate);
+    const fontScale = Number(value.fontScale);
+    const highContrast = value.highContrast === true;
+
     return {
       readingAssistantEnabled: value.readingAssistantEnabled === true,
       autoReadEnabled: value.autoReadEnabled === true,
@@ -86,6 +93,21 @@ export class AccessibilityPreferencesService {
         typeof value.preferredVoice === 'string' && value.preferredVoice.trim()
           ? value.preferredVoice.trim().slice(0, 120)
           : null,
+      fontScale: Number.isFinite(fontScale)
+        ? Math.min(1.8, Math.max(1, fontScale))
+        : DEFAULT_ACCESSIBILITY_PREFERENCES.fontScale,
+      highContrast,
     };
+  }
+
+  private applyPreferences(preferences: AccessibilityPreferences): void {
+    if (typeof document === 'undefined') return;
+
+    document.documentElement.style.setProperty(
+      '--accessibility-font-scale',
+      String(preferences.fontScale),
+    );
+
+    document.body.classList.toggle('high-contrast', preferences.highContrast);
   }
 }

@@ -22,6 +22,7 @@ export class ReadingAssistant implements OnInit, OnDestroy {
   readonly expanded = signal(false);
   readonly saving = signal(false);
   readonly rateOptions = [0.75, 1, 1.25, 1.5, 2];
+  readonly fontScaleOptions = [1, 1.2, 1.4, 1.6];
 
   async ngOnInit(): Promise<void> {
     this.reader.initialize();
@@ -84,6 +85,18 @@ export class ReadingAssistant implements OnInit, OnDestroy {
       enabled
         ? 'La lectura automática se aplicará al navegar a otra página.'
         : 'Lectura automática desactivada.',
+    );
+  }
+
+  async changeFontScale(scale: number): Promise<void> {
+    await this.savePreference({ fontScale: Number(scale) });
+    this.reader.status.set(`Tamaño de texto ajustado a ${Number(scale).toFixed(1)}×.`);
+  }
+
+  async toggleHighContrast(enabled: boolean): Promise<void> {
+    await this.savePreference({ highContrast: enabled });
+    this.reader.status.set(
+      enabled ? 'Modo de alto contraste activado.' : 'Modo de alto contraste desactivado.',
     );
   }
 

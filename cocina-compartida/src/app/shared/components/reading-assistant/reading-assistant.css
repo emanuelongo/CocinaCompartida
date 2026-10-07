@@ -5,6 +5,7 @@
   z-index: 1200;
   color: #1f2d26;
   font-family: inherit;
+  font-size: 16px;
 }
 
 .reader-launcher {
@@ -57,13 +58,13 @@
 
 .reader-header h2 {
   color: #183f30;
-  font-size: 1.25rem;
+  font-size: 20px;
 }
 
 .reader-eyebrow {
   margin-bottom: 4px !important;
   color: #9d531f;
-  font-size: 0.72rem;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -84,7 +85,7 @@
 .reader-help {
   margin: 14px 0;
   color: #4e5d55;
-  font-size: 0.9rem;
+  font-size: 14px;
   line-height: 1.5;
 }
 
@@ -129,8 +130,12 @@
   align-items: center;
   gap: 10px;
   color: #2e4037;
-  font-size: 0.88rem;
+  font-size: 14px;
   font-weight: 700;
+}
+
+.high-contrast-option {
+  margin-top: 10px;
 }
 
 .reader-settings select {
@@ -150,7 +155,7 @@
   gap: 10px;
   margin-top: 14px;
   color: #2e4037;
-  font-size: 0.88rem;
+  font-size: 14px;
   line-height: 1.4;
   cursor: pointer;
 }
@@ -169,14 +174,14 @@
   border-radius: 8px;
   background: #edf4ef;
   color: #244c3b;
-  font-size: 0.86rem;
+  font-size: 14px;
   line-height: 1.4;
 }
 
 .reader-shortcuts {
   margin: 10px 0 0;
   color: #68756e;
-  font-size: 0.75rem;
+  font-size: 12px;
   line-height: 1.4;
 }
 

@@ -96,6 +96,20 @@
           </option>
         </select>
       </label>
+
+      <label for="reader-font-scale">
+        Tamaño de letra
+        <select
+          id="reader-font-scale"
+          [ngModel]="preferencesService.preferences().fontScale"
+          (ngModelChange)="changeFontScale($event)"
+          [disabled]="saving()"
+        >
+          <option *ngFor="let scale of fontScaleOptions" [ngValue]="scale">
+            {{ scale.toFixed(1) }}×
+          </option>
+        </select>
+      </label>
     </div>
 
     <label class="auto-read-option">
@@ -106,6 +120,16 @@
         [disabled]="saving()"
       />
       Leer automáticamente al cambiar de página
+    </label>
+
+    <label class="auto-read-option high-contrast-option">
+      <input
+        type="checkbox"
+        [ngModel]="preferencesService.preferences().highContrast"
+        (ngModelChange)="toggleHighContrast($event)"
+        [disabled]="saving()"
+      />
+      Alto contraste y fondo negro
     </label>
 
     <p class="reader-status" role="status" aria-live="polite" aria-atomic="true">
