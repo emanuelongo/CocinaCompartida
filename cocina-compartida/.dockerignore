@@ -3,3 +3,9 @@ dist
 .git
 .vscode
 coverage
+.angular
+cypress
+stagehand
+postman
+evidencias
+*.log

@@ -15,16 +15,22 @@ import { CookingJournalModule } from './cooking-journal/cooking-journal.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
-      username: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASSWORD || 'postgres',
-      database: process.env.DB_NAME || 'cocina',
+      ...(process.env.DATABASE_URL
+        ? { url: process.env.DATABASE_URL }
+        : {
+            host: process.env.DB_HOST || 'localhost',
+            port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
+            username: process.env.DB_USER || 'postgres',
+            password: process.env.DB_PASSWORD || 'postgres',
+            database: process.env.DB_NAME || 'cocina',
+          }),
       autoLoadEntities: true,
       synchronize: process.env.NODE_ENV !== 'production' || process.env.DB_SYNC === 'true', // ✅ true en development o si se fuerza con DB_SYNC
-      ssl: process.env.DB_SSL === 'true' 
-        ? { rejectUnauthorized: false }
-        : false,
+      ssl:
+        process.env.DB_SSL === 'true' ||
+        (Boolean(process.env.DATABASE_URL) && !process.env.DATABASE_URL?.includes('localhost'))
+          ? { rejectUnauthorized: false }
+          : false,
       logging: ['error', 'warn', 'schema'], // ✅ Ver las queries de creación
       extra: {
         max: 10,
@@ -37,7 +43,7 @@ import { CookingJournalModule } from './cooking-journal/cooking-journal.module';
     RecipesModule,
     UploadsModule,
     SeederModule,
-    CookingJournalModule
+    CookingJournalModule,
   ],
 })
 export class AppModule {}

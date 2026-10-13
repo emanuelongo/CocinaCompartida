@@ -19,6 +19,9 @@ RUN npm install --only=production
 
 COPY --from=builder /usr/src/app/dist ./dist
 
+# Asegurar existencia de directorio de uploads
+RUN mkdir -p uploads
+
 # The default NestJS port is 3000
 EXPOSE 3000
 

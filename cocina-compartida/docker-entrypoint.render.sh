@@ -3,16 +3,21 @@
 # con el valor real inyectado por Render en tiempo de ejecución
 set -e
 
-# Override BACKEND_URL permanently to use the public URL
-# This guarantees it works even if Render dashboard has stale variables
-export BACKEND_URL="https://cocina-compartida-api.onrender.com"
+# Si BACKEND_URL no fue inyectada o está vacía, usamos el fallback por defecto
+if [ -z "$BACKEND_URL" ]; then
+  export BACKEND_URL="https://cocina-compartida-api.onrender.com"
+fi
 
-: "${BACKEND_URL:?La variable BACKEND_URL es requerida}"
+# Eliminar barra diagonal final si existe
+export BACKEND_URL="${BACKEND_URL%/}"
 
 export BACKEND_HOST=$(echo "$BACKEND_URL" | awk -F/ '{print $3}')
 
 # Extraer el DNS interno del sistema para que Nginx pueda resolver hosts dinámicamente
 export NAMESERVER=$(awk '/^nameserver/ {print $2; exit}' /etc/resolv.conf)
+if [ -z "$NAMESERVER" ]; then
+  export NAMESERVER="8.8.8.8"
+fi
 
 envsubst '${BACKEND_URL} ${BACKEND_HOST} ${NAMESERVER}' < /etc/nginx/conf.d/default.conf.template \
   > /etc/nginx/conf.d/default.conf
