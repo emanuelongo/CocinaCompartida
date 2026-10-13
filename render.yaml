@@ -55,7 +55,4 @@ services:
     region: oregon
     envVars:
       - key: BACKEND_URL
-        fromService:
-          name: cocina-compartida-api
-          type: web
-          property: url
+        value: https://cocina-compartida-api.onrender.com
