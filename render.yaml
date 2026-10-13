@@ -2,6 +2,7 @@ databases:
   - name: cocina-compartida-db
     databaseName: cocina_compartida_db
     plan: free
+    region: oregon
 
 services:
   # ── Backend (NestJS) ───────────────────────────────────────────────────────
@@ -11,11 +12,14 @@ services:
     dockerfilePath: ./cocina-compartida-api/Dockerfile
     dockerContext: ./cocina-compartida-api
     plan: free
+    region: oregon
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 3000
+      - key: DB_SYNC
+        value: "true"         # Obligatorio en Render para crear las tablas automáticamente
       - key: DB_HOST
         fromDatabase:
           name: cocina-compartida-db
@@ -40,10 +44,6 @@ services:
         value: "true"
       - key: JWT_SECRET
         generateValue: true   # Render genera un valor aleatorio seguro automáticamente
-      - key: SUPABASE_URL
-        sync: false           # Se rellena manualmente en el dashboard de Render
-      - key: SUPABASE_SERVICE_KEY
-        sync: false           # Se rellena manualmente en el dashboard de Render
 
   # ── Frontend (Angular → Nginx) ─────────────────────────────────────────────
   - type: web
@@ -52,6 +52,7 @@ services:
     dockerfilePath: ./cocina-compartida/Dockerfile.render
     dockerContext: ./cocina-compartida
     plan: free
+    region: oregon
     envVars:
       - key: BACKEND_URL
         fromService:
