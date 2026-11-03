@@ -44,6 +44,14 @@ services:
         value: "true"
       - key: JWT_SECRET
         generateValue: true   # Render genera un valor aleatorio seguro automáticamente
+      - key: SUPABASE_URL
+        sync: false           # Se rellena en el dashboard de Render (Environment)
+      - key: SUPABASE_SERVICE_KEY
+        sync: false           # Se rellena en el dashboard de Render (Environment)
+      - key: SUPABASE_AVATARS_BUCKET
+        value: avatars
+      - key: SUPABASE_RECIPES_BUCKET
+        value: recipes
 
   # ── Frontend (Angular → Nginx) ─────────────────────────────────────────────
   - type: web
