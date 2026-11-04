@@ -16,6 +16,8 @@ describe('SeederService', () => {
     count: jest.fn(),
     create: jest.fn(),
     save: jest.fn(),
+    find: jest.fn(),
+    remove: jest.fn(),
   };
 
   const mockUserRepository = {
@@ -43,6 +45,7 @@ describe('SeederService', () => {
     
     // Silence logger during tests
     jest.spyOn(Logger.prototype, 'log').mockImplementation(() => undefined);
+    jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
     
     // Clear mocks
     jest.clearAllMocks();
@@ -65,18 +68,18 @@ describe('SeederService', () => {
   });
 
   describe('seed', () => {
-    it('should skip seeding if there are 10 or more recipes', async () => {
-      mockRecipeRepository.count.mockResolvedValue(10);
+    it('should skip seeding if there are 20 or more recipes', async () => {
+      mockRecipeRepository.count.mockResolvedValue(20);
       const loggerSpy = jest.spyOn(service['logger'], 'log');
 
       await (service as any).seed();
 
       expect(mockRecipeRepository.count).toHaveBeenCalledTimes(1);
-      expect(loggerSpy).toHaveBeenCalledWith('Ya hay suficientes recetas (10) en base de datos, saltando el seeder...');
+      expect(loggerSpy).toHaveBeenCalledWith('Ya hay suficientes recetas (20) en base de datos, saltando el seeder...');
       expect(mockUserRepository.findOne).not.toHaveBeenCalled();
     });
 
-    it('should create ChefMaestro user and seed recipes if recipes count < 10', async () => {
+    it('should create ChefMaestro user and seed recipes if recipes count < 20', async () => {
       mockRecipeRepository.count.mockResolvedValue(0);
       mockUserRepository.findOne.mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed_password');
@@ -101,7 +104,7 @@ describe('SeederService', () => {
       // Checking recipes seeding
       expect(mockRecipeRepository.create).toHaveBeenCalled();
       expect(mockRecipeRepository.save).toHaveBeenCalled();
-      expect(loggerSpy).toHaveBeenCalledWith('Las 10 recetas han sido precargadas exitosamente.');
+      expect(loggerSpy).toHaveBeenCalledWith('Las 20 recetas han sido precargadas exitosamente.');
     });
 
     it('should not create ChefMaestro if user already exists', async () => {
