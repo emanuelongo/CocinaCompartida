@@ -8,6 +8,15 @@ if [ -z "$BACKEND_URL" ]; then
   export BACKEND_URL="https://cocina-compartida-api.onrender.com"
 fi
 
+# Eliminar espacios en blanco
+export BACKEND_URL=$(echo "$BACKEND_URL" | tr -d '[:space:]')
+
+# Si no empieza con http:// ni https://, agregar https://
+case "$BACKEND_URL" in
+  http://*|https://*) ;;
+  *) export BACKEND_URL="https://${BACKEND_URL}" ;;
+esac
+
 # Eliminar barra diagonal final si existe
 export BACKEND_URL="${BACKEND_URL%/}"
 

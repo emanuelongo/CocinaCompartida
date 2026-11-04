@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map, catchError, throwError } from 'rxjs';
+import { Observable, map, catchError, throwError, of } from 'rxjs';
 
 export interface AssistantMessage {
   id: string;
@@ -14,10 +14,11 @@ export interface AssistantMessage {
 })
 export class CookingAssistantService {
 
-  private readonly API_KEY = '';
+  // Coloca aquí tu API Key de Google Gemini (Google AI Studio) si deseas activar la IA
+  private readonly API_KEY: string = '';
 
   private readonly API_URL =
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent';
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
   constructor(private http: HttpClient) {}
 
@@ -54,6 +55,12 @@ amablemente que eres un asistente especializado en cocina.
 `;
 
   generateResponse(userMessage: string): Observable<string> {
+    // Si no hay API Key configurada, responder con un mensaje amigable sin generar error HTTP 403
+    if (!this.API_KEY || this.API_KEY.trim() === '') {
+      return of(
+        '👨‍🍳 ¡Hola! El asistente culinario con IA está listo, pero requiere una clave de Google Gemini (API_KEY) para generar respuestas automáticas personalizadas.'
+      );
+    }
 
     const prompt = `
 ${this.systemPrompt}
@@ -77,16 +84,13 @@ ${userMessage}
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      'x-goog-api-key': this.API_KEY
+      'x-goog-api-key': this.API_KEY.trim()
     });
 
     return this.http
       .post<any>(this.API_URL, body, { headers })
       .pipe(
         map(response => {
-
-          console.log('Respuesta completa de Gemini:', response);
-
           const text =
             response?.candidates?.[0]?.content?.parts?.[0]?.text;
 
@@ -98,7 +102,6 @@ ${userMessage}
         }),
 
         catchError(error => {
-
           console.error('========== GEMINI ERROR ==========');
           console.error('Status:', error?.status);
           console.error('Mensaje:', error?.message);
@@ -111,6 +114,10 @@ ${userMessage}
   }
 
   generateGreeting(): Observable<string> {
+    // Si no hay API Key, retornar el saludo por defecto inmediatamente
+    if (!this.API_KEY || this.API_KEY.trim() === '') {
+      return of('👨‍🍳 ¡Hola! Soy tu asistente de Cocina Compartida. ¿Qué te gustaría cocinar o consultar hoy?');
+    }
 
     return this.generateResponse(`
 Saluda al usuario que acaba de abrir Cocina Compartida.

@@ -63,4 +63,4 @@ services:
     region: oregon
     envVars:
       - key: BACKEND_URL
-        value: https://cocina-compartida-api.onrender.com
+        sync: false           # URL del backend de este fork en Render (ej: https://cocina-compartida-api-xxxx.onrender.com)
